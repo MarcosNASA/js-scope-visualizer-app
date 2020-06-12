@@ -1,0 +1,10 @@
+.package-lock.json
+.package.json
+
+.eslintrc
+.prettierrc
+
+.vscode
+
+node_modules
+assets

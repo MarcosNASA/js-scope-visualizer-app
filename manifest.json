@@ -1,0 +1,46 @@
+{
+  "name": "JS Scope Visualizer",
+  "short_name": "JS SV",
+  "theme_color": "#",
+  "background_color": "#ffffff",
+  "display": "minimal-ui",
+  "scope": "./",
+  "start_url": "./index.html",
+  "icons": [
+    {
+      "src": "./assets/icons/icon-1080.png",
+      "type": "image/png",
+      "size": "1080x1080"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "type": "image/png",
+      "size": "512x512"
+    },
+    {
+      "src": "./assets/icons/icon-256.png",
+      "type": "image/png",
+      "size": "256x256"
+    },
+    {
+      "src": "./assets/icons/icon-192.png",
+      "type": "image/png",
+      "size": "192x192"
+    },
+    {
+      "src": "./assets/icons/icon-128.png",
+      "type": "image/png",
+      "size": "128x128"
+    },
+    {
+      "src": "./assets/icons/icon-96.png",
+      "type": "image/png",
+      "size": "96x96"
+    },
+    {
+      "src": "./assets/icons/icon-64.png",
+      "type": "image/png",
+      "size": "64x64"
+    }
+  ]
+}

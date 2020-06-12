@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <title>JS Scope Visualizer</title>
+      <meta charset="utf-8">
+      <meta name="description"
+            content="JS Scope visualizer for learning purposes">
+      <meta name="author"
+            content="Marcos NASA G">
+      <meta name="keywords"
+            content="JS, JavaScript, Scope, Visualizer">
+      <meta name="viewport"
+            content="width=device-width, initial-scale=1">
+      <meta name="theme-color"
+            content="#">
+      <meta property="og:title"
+            content="JS Scope Visualizer" />
+      <meta property="og:type"
+            content="website" />
+      <meta property="og:url"
+            content="https://marcosnasa.github.io/JS-3-pillars/scope" />
+      <meta property="og:image"
+            content="https://marcosnasa.github.io/assets/images/home.jpg" />
+      <meta property="og:description"
+            content="JavaScript scope visualizer for learning purposes." />
+      <link rel="canonical"
+            href="https://marcosnasa.github.io/js-3-pillars/scope" />
+      <link rel="shortcut icon"
+            type="image/x-icon"
+            href="./assets/icons/favicon.ico" />
+      <link rel="apple-touch-icon"
+            href="./assets/icons/favicon.ico">
+      <link rel="stylesheet"
+            href="lib/codemirror.css">
+      <link href="./src/app/styles.css"
+            rel="stylesheet">
+      </link>
+      <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+            rel="preload"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'">
+      <link href="./src/app/styles/mediaqueries.css"
+            rel="stylesheet">
+      </link>
+      <noscript>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+                  rel="stylesheet">
+            <link href="./src/app/styles/skills.css"
+                  rel="stylesheet">
+            <link href="./src/app/styles/projects.css"
+                  rel="stylesheet">
+      </noscript>
+
+      <script src="lib/codemirror.js"
+              defer></script>
+      <script src="lib/addons.js"
+              defer></script>
+      <script src="https://unpkg.com/prettier@2.0.5/standalone.js"
+              defer></script>
+      <script src="https://unpkg.com/prettier@2.0.5/parser-babel.js"
+              defer></script>
+      <script src="https://unpkg.com/esprima@~4.0/dist/esprima.js"
+              defer></script>
+      <script src="./src/app/main.js"
+              defer></script>
+      <script>
+            // if ('serviceWorker' in navigator) {
+            //     navigator.serviceWorker.register('./service-worker.js', {
+            //         scope: './'
+            //     });
+            // }
+      </script>
+
+      <link rel="manifest"
+            href="./manifest.json">
+</head>
+
+<body class="app">
+      <header class="header">
+            <h1 class="header__title">JS Scope Visualizer</h1>
+            <!-- <nav class="nav-bar">
+            <ul class="nav-bar__list">
+                <li class="nav-bar__item">
+                    <a class="nav-bar__link"
+                       href="#"
+                       tabindex="0">
+                        <svg xmlns="https://www.w3.org/2000/svg"
+                             class="nav-bar__icon"
+                             height="24"
+                             viewBox="0 0 24 24"
+                             width="24"
+                             role="img">
+                            <title id="homeTitle">Home</title>
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                                  fill="#0c0c0d" />
+                        </svg>
+                        HOME
+                    </a>
+                </li>
+            </ul>
+        </nav> -->
+      </header>
+      <main class="code">
+            <fieldset class="code-editor">
+                  <legend class="code-editor__title">Your code</legend>
+                  <textarea id="code-editor"
+                            class="code-editor__editor"
+                            name="code-editor"></textarea>
+            </fieldset>
+      </main>
+      <section class="visualizer">
+            <canvas id="canvas"
+                    class="canvas">
+            </canvas>
+      </section>
+      <section class="displayer">
+            <fieldset class="code-displayer">
+                  <legend class="code-displayer__title">Scope visualizer</legend>
+                  <textarea id="code-displayer"
+                            class="code-displayer__editor"
+                            name="code-displayer"></textarea>
+            </fieldset>
+      </section>
+      <footer class="footer">
+            <p>
+                  Built by Marcos NASA G
+                  <i>&copy;</i>
+                  <time>2020</time>
+            </p>
+      </footer>
+
+</body>
+
+</html>

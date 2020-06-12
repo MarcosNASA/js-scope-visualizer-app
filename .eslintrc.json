@@ -1,0 +1,22 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["google"],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "script"
+  },
+  "rules": {
+    "block-scoped-var": "error",
+    "no-var": "off",
+    "linebreak-style": "off",
+    "object-curly-spacing": "off",
+    "indent": "off"
+  }
+}

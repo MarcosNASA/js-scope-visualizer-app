@@ -1,0 +1,20 @@
+@media screen and (max-width: 724px) {
+  .app {
+    grid-template-areas:
+      'header header'
+      'code code'
+      'displayer displayer'
+      'footer footer';
+    grid-template-rows: 100px auto auto 100px;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  :root {
+    font-size: 9px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+}
