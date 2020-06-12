@@ -1,0 +1,32 @@
+{
+  "name": "scope",
+  "version": "1.0.0",
+  "description": "JS Scope Visualizer",
+  "main": "index.html",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcosNASA/js-scope-visualizer.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "JS",
+    "Scope",
+    "Visualizer"
+  ],
+  "author": "Marcos NASA G",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarcosNASA/js-scope-visualizer/issues"
+  },
+  "homepage": "https://github.com/MarcosNASA/js-scope-visualizer#readme",
+  "dependencies": {
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3"
+  }
+}

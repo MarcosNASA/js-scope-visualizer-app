@@ -6,14 +6,13 @@ var app = (function App() {
     varDeclarations: [],
     varAccesses: [],
     scopes: [],
-    color: 'rgba(220, 30, 15, 0.5)',
+    color: '#db1d0f',
   };
   const squareFallback = { x: 0, y: 0, width: 0, height: 0 };
   var code;
   var codeEditor;
   var codeDisplayer;
-  var canvas;
-  var ctx;
+  var scopeBubbles;
   var visualizer;
 
   return { bootstrap };
@@ -34,8 +33,7 @@ var app = (function App() {
       document.getElementById('code-displayer'),
       true,
     );
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
+    scopeBubbles = document.getElementById('scopes');
     visualizer = document.querySelector(
       '.code-displayer > .CodeMirror .CodeMirror-code',
     );
@@ -61,11 +59,17 @@ var app = (function App() {
     return codeMirror;
   }
 
+  /**
+   *
+   */
   function onInput(event) {
     code = processCode(Object.freeze(code), event.getValue());
     updateCodeDisplayer(code);
   }
 
+  /**
+   *
+   */
   function processCode(code, value) {
     var processedCode = JSON.parse(JSON.stringify(code));
     try {
@@ -94,6 +98,9 @@ var app = (function App() {
     return processedCode;
   }
 
+  /**
+   *
+   */
   function processScopes(code) {
     var processedScopes = [{ ...defaultScope }];
 
@@ -102,6 +109,9 @@ var app = (function App() {
     return { ...code, scope: processedScopes };
   }
 
+  /**
+   *
+   */
   function updateCodeDisplayer(code) {
     requestAnimationFrame(() => {
       codeDisplayer.setValue(code.value);
@@ -120,34 +130,50 @@ var app = (function App() {
     }
   }
 
+  /**
+   *
+   */
   function setVisualization(code) {
     var visualizerFigure = visualizer.getBoundingClientRect();
-    drawBubble(code.scopes[0].color, visualizerFigure, visualizerFigure);
+    drawBubble(visualizerFigure, visualizerFigure);
     var elements = visualizer.querySelectorAll('pre.CodeMirror-line');
     elements.forEach((e) => {
       console.log(e.textContent);
     });
   }
 
+  /**
+   *
+   */
   function drawBubble(
-    color,
     {
-      x: bX = 0,
-      y: bY = 0,
-      width: bWidth = 0,
-      height: bHeight = 0,
+      x: bubbleX = 0,
+      y: bubbleY = 0,
+      width: bubbleWidth = 0,
+      height: bubbleHeight = 0,
     } = squareFallback,
     { x = 0, y = 0 } = squareFallback,
+    color = defaultScope.color,
   ) {
-    ctx.fillStyle = color;
-    console.log(ctx);
-    console.log(bX, bY, bWidth, bHeight);
-    ctx.fillRect(bX - x, bY - y, bWidth, bHeight);
-    console.log(canvas);
+    var bubble = document.createElement('div');
+    bubble.classList.add('scopes__bubble');
+    bubble.style = `
+                    background-color: ${color};
+                    width: ${bubbleWidth}px;
+                    height: ${bubbleHeight}px;
+                    top: ${bubbleX - x}px;
+                    left: ${bubbleY - y}px;
+                    `;
+    bubble.style.width = bubbleWidth;
+    bubble.style.height = bubbleHeight;
+    scopeBubbles.appendChild(bubble);
   }
 
+  /**
+   *
+   */
   function clearVisualization(code) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    scopeBubbles.innerHTML = '';
   }
 })();
 

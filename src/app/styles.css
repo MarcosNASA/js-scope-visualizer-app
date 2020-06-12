@@ -141,21 +141,22 @@
   padding: 0 10px;
 }
 
-.visualizer {
+.scopes {
   grid-area: displayer;
   height: calc(100vh - 200px);
   width: 100%;
-  padding: var(--padding-sm);
+  padding: 40px 0px 0px 44px;
   position: relative;
-  /* z-index: 1000; */
+  z-index: 1000;
 }
 
-.canvas {
-  height: calc(100% - var(--padding-sm) - var(--padding-sm));
-  width: calc(100% - var(--padding-sm) - var(--padding-sm));
-  padding: 30px 10px 14px 34px;
-  position: absolute;
-  z-index: 1;
+.scopes__bubble {
+  border-radius: 4px;
+  opacity: 0.3;
+}
+
+.scopes__bubble:hover {
+  border: 3px solid var(--dark-color);
 }
 
 .displayer {
