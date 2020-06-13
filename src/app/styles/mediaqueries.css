@@ -3,7 +3,7 @@
     grid-template-areas:
       'header header'
       'code code'
-      'displayer displayer'
+      'visualizer visualizer'
       'footer footer';
     grid-template-rows: 100px auto auto 100px;
     grid-template-columns: 1fr 1fr;

@@ -29,29 +29,26 @@ var app = (function App() {
       valid: true,
     };
     codeEditor = setupCodeEditor(document.getElementById('code-editor'), false);
-    codeDisplayer = setupCodeEditor(
-      document.getElementById('code-displayer'),
-      true,
-    );
+    codeEditor.save();
+    codeDisplayer = setupCodeEditor(document.getElementById('code-displayer'), true);
     scopeBubbles = document.getElementById('scopes');
-    visualizer = document.querySelector(
-      '.code-displayer > .CodeMirror .CodeMirror-code',
-    );
+    // visualizer = document.querySelector(
+    //   '.code-displayer > .CodeMirror .CodeMirror-code',
+    // );
 
     codeEditor.on('change', onInput);
+    return codeEditor;
   }
 
   function setupCodeEditor(codeEditor, readOnly) {
     CodeMirror.colorize();
     var codeMirror = CodeMirror.fromTextArea(codeEditor, {
       mode: 'application/javascript',
-      // value: !readOnly
-      //   ? ``
-      //   : '',
+      value: ``,
       lineNumbers: true,
       lineWrapping: true,
-      autofocus: !readOnly,
-      readOnly,
+      autofocus: true,
+      readOnly: readOnly,
       tabSize: 2,
       tabindex: 0,
     });
@@ -104,8 +101,6 @@ var app = (function App() {
   function processScopes(code) {
     var processedScopes = [{ ...defaultScope }];
 
-    console.log(processedScopes);
-
     return { ...code, scope: processedScopes };
   }
 
@@ -114,6 +109,7 @@ var app = (function App() {
    */
   function updateCodeDisplayer(code) {
     requestAnimationFrame(() => {
+      // write(code.value);
       codeDisplayer.setValue(code.value);
     });
     if (code.valid && code.value) {
@@ -133,13 +129,40 @@ var app = (function App() {
   /**
    *
    */
-  function setVisualization(code) {
-    var visualizerFigure = visualizer.getBoundingClientRect();
-    drawBubble(visualizerFigure, visualizerFigure);
-    var elements = visualizer.querySelectorAll('pre.CodeMirror-line');
-    elements.forEach((e) => {
-      console.log(e.textContent);
+  function write(code) {
+    codeDisplayer.innerHTML = '';
+    var codeLines = code.split('\n');
+    codeLines.forEach((codeLine) => {
+      var line = document.createElement('div');
+      {
+        let codeFragments = codeLine.split('\t');
+        codeFragments.forEach((codeFragment) => {
+          if (codeFragment == '') {
+            var tab = document.createElement('span');
+            tab.classList.add('tab');
+            line.appendChild(tab);
+          }
+        });
+      }
+      {
+        let lineCode = document.createElement('span');
+        lineCode.textContent = codeLine;
+        line.appendChild(lineCode);
+      }
+      line.classList.add('line');
+      codeDisplayer.appendChild(line);
     });
+  }
+
+  /**
+   *
+   */
+  function setVisualization(code) {
+    // var visualizerFigure = visualizer.getBoundingClientRect();
+    // drawBubble(visualizerFigure, visualizerFigure);
+    // elements.forEach((e) => {
+    //   console.log(e.textContent);
+    // });
   }
 
   /**

@@ -3,7 +3,7 @@
     "browser": true,
     "es6": true
   },
-  "extends": ["google, prettier"],
+  "extends": ["google"],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -12,15 +12,14 @@
     "ecmaVersion": 11,
     "sourceType": "script"
   },
-  "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": "error",
     "block-scoped-var": "error",
     "no-var": "off",
     "linebreak-style": "off",
     "object-curly-spacing": "off",
     "indent": "off",
     "max-len": "off",
+    "operator-linebreak": "off",
     "valid-jsdoc": "off",
     "require-jsdoc": "off"
   }

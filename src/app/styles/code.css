@@ -1,0 +1,42 @@
+/* CODE */
+
+.CodeMirror {
+  height: calc(100% - 20px);
+}
+
+.CodeMirror-gutters,
+.CodeMirror-linenumbers {
+  background-color: white;
+}
+
+.code {
+  grid-area: code;
+  height: calc(100vh - 200px);
+  width: 100%;
+  padding: var(--padding-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.code-editor {
+  height: calc(100% - var(--padding-sm));
+  width: 100%;
+  padding: var(--padding-sm) 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-inline-size: 100%;
+}
+
+.code-editor__title {
+  grid-area: lines;
+  height: 20px;
+  padding: 0 10px;
+}
+
+.code-editor__editor {
+    display: none;
+}
