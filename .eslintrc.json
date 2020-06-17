@@ -13,7 +13,8 @@
     "sourceType": "script"
   },
   "rules": {
-    "block-scoped-var": "error",
+    "block-scoped-var": "off",
+    "prefer-const": "off",
     "no-var": "off",
     "linebreak-style": "off",
     "object-curly-spacing": "off",

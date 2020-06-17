@@ -59,16 +59,21 @@
             <link href="./src/app/styles/visualizer.css"
                   rel="stylesheet">
       </noscript>
-
       <script src="lib/codemirror.js"
-              defer></script>
-      <script src="lib/addons.js"
               defer></script>
       <script src="https://unpkg.com/prettier@2.0.5/standalone.js"
               defer></script>
       <script src="https://unpkg.com/prettier@2.0.5/parser-babel.js"
               defer></script>
       <script src="https://unpkg.com/esprima@~4.0/dist/esprima.js"
+              defer></script>
+      <script src="lib/estraverse.js"
+              defer></script>
+      <script src="lib/escope.js"
+              defer></script>
+      <script src="lib/eslevels.js"
+              defer></script>
+      <script src="lib/randomColor.js"
               defer></script>
       <script src="./src/app/main.js"
               defer></script>
@@ -87,50 +92,30 @@
 <body class="app">
       <header class="header">
             <h1 class="header__title">JS Scope Visualizer</h1>
-            <!-- <nav class="nav-bar">
-            <ul class="nav-bar__list">
-                <li class="nav-bar__item">
-                    <a class="nav-bar__link"
-                       href="#"
-                       tabindex="0">
-                        <svg xmlns="https://www.w3.org/2000/svg"
-                             class="nav-bar__icon"
-                             height="24"
-                             viewBox="0 0 24 24"
-                             width="24"
-                             role="img">
-                            <title id="homeTitle">Home</title>
-                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-                                  fill="#0c0c0d" />
-                        </svg>
-                        HOME
-                    </a>
-                </li>
-            </ul>
-        </nav> -->
+            <!--
+            <nav class="nav-bar">
+                  <ul class="nav-bar__list">
+                  <li class="nav-bar__item">
+                        <a class="nav-bar__link"
+                        href="#"
+                        tabindex="0">
+                              <svg xmlns="https://www.w3.org/2000/svg"
+                              class="nav-bar__icon"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              width="24"
+                              role="img">
+                              <title id="homeTitle">Home</title>
+                              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                                    fill="#0c0c0d" />
+                              </svg>
+                              HOME
+                        </a>
+                  </li>
+                  </ul>
+            </nav>
+            -->
       </header>
-      <!-- <main class="code">
-            <fieldset class="code-editor">
-                  <legend class="code-editor__title">Your code</legend>
-                  <textarea id="code-editor"
-                            class="code-editor__editor"
-                            name="code-editor"></textarea>
-            </fieldset>
-      </main>
-      <section class="visualizer">
-            <fieldset class="code-displayer">
-                  <legend class="code-displayer__title">Scope visualizer</legend>
-                  <div class="custom-code-editor">
-                        <div class="custom-code-editor__lines"></div>
-                        <div id="code-displayer"
-                             class="custom-code-editor__editor"
-                             name="code-displayer"></div>
-                  </div>
-            </fieldset>
-            <div id="scopes"
-                 class="scopes">
-            </div>
-      </section> -->
       <main class="code">
             <fieldset class="code-editor">
                   <legend class="code-editor__title">Your code</legend>
@@ -142,12 +127,9 @@
       <section class="visualizer">
             <fieldset class="code-displayer">
                   <legend class="code-displayer__title">Scope visualizer</legend>
-                  <div class="custom-code-editor">
-                        <div class="custom-code-editor__lines"></div>
-                        <textarea id="code-displayer"
-                                  class="code-editor__editor"
-                                  name="code-displayer"></textarea>
-                  </div>
+                  <textarea id="code-displayer"
+                            class="code-editor__editor"
+                            name="code-displayer"></textarea>
             </fieldset>
             <div id="scopes"
                  class="scopes">
