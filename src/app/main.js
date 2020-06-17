@@ -18,13 +18,13 @@ var app = (function App() {
     codeLines: [],
     parsed: undefined,
     scopes: [],
+    bubbles: [],
     valid: true,
   };
   var code;
   var codeEditor;
   var codeDisplayer;
   var scopeBubbles;
-  var visualizer;
 
   return { bootstrap };
 
@@ -33,30 +33,23 @@ var app = (function App() {
    */
   function bootstrap() {
     code = { ...defaultCode };
-    codeEditor = setupCodeEditor(document.getElementById('code-editor'), false);
-    codeEditor.save();
-    codeDisplayer = setupCodeEditor(
-      document.getElementById('code-displayer'),
-      true,
-    );
+    codeEditor = setupCodeEditor(document.getElementById('code-editor'));
+    codeDisplayer = document.getElementById('code-displayer');
     scopeBubbles = document.getElementById('scopes');
-    visualizer = document.querySelector(
-      '.code-displayer > .CodeMirror .CodeMirror-code',
-    );
 
-    codeEditor.on('change', onInput);
-    window.addEventListener('resize', onResize);
-    return codeEditor;
+    codeEditor.on('change', handleInput);
+    codeDisplayer.onscroll = handleDisplayerScroll;
+    window.onresize = handleResize;
   }
 
-  function setupCodeEditor(codeEditor, readOnly) {
+  function setupCodeEditor(codeEditor) {
     var codeMirror = CodeMirror.fromTextArea(codeEditor, {
       mode: 'application/javascript',
       value: ``,
       lineNumbers: true,
       lineWrapping: true,
       autofocus: true,
-      readOnly: readOnly,
+      readOnly: false,
       tabSize: 2,
       tabindex: 0,
     });
@@ -67,16 +60,27 @@ var app = (function App() {
   /**
    *
    */
-  function onInput(event) {
-    code = processCode(Object.freeze(code), event.getValue());
+  function handleInput(event) {
+    code = processCode(code, event.getValue());
     updateCodeDisplayer(code);
   }
 
   /**
    *
    */
-  function onResize(event) {
-    updateCodeDisplayer(code);
+  function handleDisplayerScroll(event) {
+    console.log(event);
+
+    scopeBubbles.scrollTop = event.target.scrollTop;
+  }
+
+  /**
+   *
+   */
+  function handleResize() {
+    console.log(code);
+    // code = processCode(code, code.value);
+    // updateCodeDisplayer(code);
   }
 
   /**
@@ -115,11 +119,11 @@ var app = (function App() {
       : processedCode;
 
     processedCode = processedCode.valid
-      ? processLines(Object.freeze(processedCode))
+      ? processLines(processedCode)
       : processedCode;
 
     processedCode = processedCode.valid
-      ? processScopes(Object.freeze(processedCode))
+      ? processScopes(processedCode)
       : processedCode;
 
     return processedCode;
@@ -152,9 +156,9 @@ var app = (function App() {
    *
    */
   function processScopes(code) {
-    var scopes = escope.analyze(Object.freeze(code.parsed), { ecmaVersion: 6 });
+    var scopes = escope.analyze(code.parsed, { ecmaVersion: 6 });
 
-    var levels = eslevels.levels(Object.freeze(code.parsed), {
+    var levels = eslevels.levels(code.parsed, {
       mode: 'full',
       escopeOpts: {
         ecmaVersion: 6,
@@ -185,7 +189,7 @@ var app = (function App() {
    */
   function updateCodeDisplayer(code) {
     requestAnimationFrame(() => {
-      codeDisplayer.setValue(code.value);
+      write(code.value);
     });
 
     requestAnimationFrame(function clearBubbles() {
@@ -204,17 +208,48 @@ var app = (function App() {
   /**
    *
    */
+  function write(code) {
+    codeDisplayer.innerHTML = '';
+    var codeLines = code.split('\n');
+    codeLines.forEach(function customLineWriting(codeLine) {
+      var line = document.createElement('div');
+      {
+        let codeFragments = codeLine.split('\t');
+        codeFragments.forEach(function addTabs(codeFragment) {
+          if (codeFragment == '') {
+            var tab = document.createElement('span');
+            tab.classList.add('tab');
+            line.appendChild(tab);
+          }
+        });
+      }
+      {
+        let lineCode = document.createElement('span');
+        codeLine
+          .split(/([a-zA-Z0-9]+)/g)
+          .filter(function filterEmptyTokens(token) {
+            return token;
+          })
+          .forEach(function tokenizeLine(token) {
+            var word = document.createElement('span');
+            word.textContent = token;
+            lineCode.appendChild(word);
+          });
+        line.appendChild(lineCode);
+      }
+      line.classList.add('line');
+      codeDisplayer.appendChild(line);
+    });
+  }
+
+  /**
+   *
+   */
   function setBubbles({ codeLines, scopes, ...rest }) {
-    var visualizerFigure = visualizer.getBoundingClientRect();
-    drawBubble(visualizerFigure, visualizerFigure);
+    var codeLineElements = [...codeDisplayer.getElementsByClassName('line')];
 
-    var codeLineElements = [
-      ...visualizer.getElementsByClassName('CodeMirror-line'),
-    ];
+    var bubbles = [];
 
-    var bubbles = {
-      scopes: [],
-    };
     for (let scope of scopes.scopes) {
       let {
         block: {
@@ -222,52 +257,74 @@ var app = (function App() {
         },
         variables,
       } = scope;
-      // let [scopeRangeStart, scopeRangeEnd] = scope.block.range;
+      let scopeColor = randomColor();
       let scopeBubbleLines = [];
-      let scopeBubbleVariables = [];
+
       for (let i = 0; i < codeLines.length; i++) {
         if (
           codeLines[i].startChar >= scopeRangeStart &&
           codeLines[i].endChar <= scopeRangeEnd
         ) {
           scopeBubbleLines.push(codeLineElements[i]);
-          // scopeBubbleVariables.push(codeLineElements[i]);
         }
       }
-      bubbles.scopes.push({
+      let scopeBubbleVariables = [];
+
+      for (let {
+        name,
+        identifiers: [
+          { loc: { start: startChar, end: endChar } = {} } = {},
+        ] = [],
+      } of variables) {
+        scopeBubbleVariables.push({
+          name,
+          startChar,
+          endChar,
+          color: scopeColor,
+        });
+      }
+
+      bubbles.push({
         lines: scopeBubbleLines,
-        variables,
-        color: randomColor(),
+        scopeBubbleVariables,
+        color: scopeColor,
       });
     }
 
-    console.log(bubbles);
-
-    // for (let i = 0; i < codeLineElements.length; i++) {
-    //   if (codeLineElements[i].textContent.trim() == codeLines[i].line.trim()) {
-    //     console.log('equal');
-    //   } else if (
-    //     codeLineElements[i].textContent.trim() == '&#8203;' &&
-    //     codeLines[i].line.trim() == ''
-    //   ) {
-    //     console.log('equal empty');
-    //   } else {
-    //     console.log('not equal');
-    //     console.log(codeLineElements[i].textContent.trim());
-    //     console.log(codeLines[i].line.trim());
-    //   }
-    //   console.log(codeLineElements[i]);
-    //   console.log(codeLines[i]);
-    // }
-
-    console.log(scopes);
-    return { codeLines, scopes, ...rest };
+    return { codeLines, scopes, ...rest, bubbles };
   }
 
   /**
    *
    */
-  function drawBubbles({ codeLines, scopes, ...rest }) {}
+  function drawBubbles({
+    codeLines,
+    bubbles: [{ lines, color }, ...bubbles],
+    ...rest
+  }) {
+    var codeLineElements = [...codeDisplayer.getElementsByClassName('line')];
+    var codeDisplayerFigure = scopeBubbles.getBoundingClientRect();
+
+    // GLOBAL.
+    var { x, y, width, height } = lines[0].getBoundingClientRect();
+    drawBubble(
+      { x, y, width, height: height * lines.length },
+      squareFallback,
+      color,
+      true,
+    );
+
+    // REST.
+    for (let { lines, color } of bubbles) {
+      let { x, y, width, height } = lines[0].getBoundingClientRect();
+      drawBubble(
+        { x, y, width, height: height * lines.length },
+        squareFallback,
+        color,
+        false,
+      );
+    }
+  }
 
   /**
    *
@@ -281,15 +338,18 @@ var app = (function App() {
     } = squareFallback,
     { x = 0, y = 0 } = squareFallback,
     color = randomColor(),
+    isGlobal = false,
   ) {
     var bubble = document.createElement('div');
-    bubble.classList.add('scopes__bubble');
+    bubble.classList.add(
+      isGlobal ? 'scopes__bubble--global' : 'scopes__bubble',
+    );
     bubble.style = `
                     background-color: ${color};
                     width: ${bubbleWidth}px;
                     height: ${bubbleHeight}px;
-                    top: ${bubbleX - x}px;
-                    left: ${bubbleY - y}px;
+                    top: ${bubbleY - y}px;
+                    left: ${bubbleX - x}px;
                     `;
     bubble.style.width = bubbleWidth;
     bubble.style.height = bubbleHeight;

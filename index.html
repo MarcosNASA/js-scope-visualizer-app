@@ -127,13 +127,19 @@
       <section class="visualizer">
             <fieldset class="code-displayer">
                   <legend class="code-displayer__title">Scope visualizer</legend>
-                  <textarea id="code-displayer"
+                  <!-- <textarea id="code-displayer"
                             class="code-editor__editor"
-                            name="code-displayer"></textarea>
+                            name="code-displayer"></textarea> -->
+                  <div class="custom-code-editor">
+                        <div class="custom-code-editor__lines"></div>
+                        <div id="code-displayer"
+                             class="custom-code-editor__editor">
+                        </div>
+                        <div id="scopes"
+                             class="scopes">
+                        </div>
+                  </div>
             </fieldset>
-            <div id="scopes"
-                 class="scopes">
-            </div>
       </section>
       <footer class="footer">
             <p>

@@ -13,6 +13,7 @@
     "sourceType": "script"
   },
   "rules": {
+    "no-invalid-this": "off",
     "block-scoped-var": "off",
     "prefer-const": "off",
     "no-var": "off",
