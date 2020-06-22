@@ -25,7 +25,7 @@
     "url": "https://github.com/MarcosNASA/js-scope-visualizer/issues"
   },
   "homepage": "https://github.com/MarcosNASA/js-scope-visualizer#readme",
-  "dependencies": {
+  "devDependencies": {
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3"
   }

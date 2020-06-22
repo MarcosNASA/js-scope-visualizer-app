@@ -16,8 +16,9 @@ var app = (function App() {
     value: '',
     rawValue: '',
     codeLines: [],
+    codeTokens: [],
     parsed: undefined,
-    scopes: [],
+    scopes: undefined,
     bubbles: [],
     valid: true,
   };
@@ -37,11 +38,42 @@ var app = (function App() {
     codeDisplayer = document.getElementById('code-displayer');
     scopeBubbles = document.getElementById('scopes');
 
-    codeEditor.on('change', handleInput);
-    codeDisplayer.onscroll = handleDisplayerScroll;
-    window.onresize = handleResize;
+    setEventListeners();
+
+    /**
+     *
+     */
+    function setEventListeners() {
+      codeEditor.on('change', handleInput);
+      var redrawDebounced = debounce(reDraw, 60);
+      codeDisplayer.addEventListener('scroll', redrawDebounced, false);
+      window.addEventListener('scroll', redrawDebounced, false);
+      window.addEventListener('resize', redrawDebounced, false);
+
+      function debounce(func, wait, immediate) {
+        var debounce;
+        return function debounced(...args) {
+          var context = this;
+          var later = function later() {
+            debounce = null;
+            if (!immediate) {
+              func.apply(context, args);
+            }
+          };
+          var callNow = immediate && !debounce;
+          clearTimeout(debounce);
+          debounce = setTimeout(later, wait);
+          if (callNow) {
+            func.apply(context, args);
+          }
+        };
+      }
+    }
   }
 
+  /**
+   *
+   */
   function setupCodeEditor(codeEditor) {
     var codeMirror = CodeMirror.fromTextArea(codeEditor, {
       mode: 'application/javascript',
@@ -60,96 +92,100 @@ var app = (function App() {
   /**
    *
    */
-  function handleInput(event) {
+  async function handleInput(event) {
     code = processCode(code, event.getValue());
+    await writeCode(code.value);
     updateCodeDisplayer(code);
   }
 
   /**
    *
    */
-  function handleDisplayerScroll(event) {
-    console.log(event);
-
-    scopeBubbles.scrollTop = event.target.scrollTop;
-  }
-
-  /**
-   *
-   */
-  function handleResize() {
-    console.log(code);
-    // code = processCode(code, code.value);
-    // updateCodeDisplayer(code);
+  function reDraw() {
+    updateCodeDisplayer(code);
   }
 
   /**
    *
    */
   function processCode(code, value) {
-    var processedCode = JSON.parse(JSON.stringify(code));
+    var processedCode = { ...code };
     processedCode.rawValue = value;
 
     try {
-      processedCode.value = prettier
-        .format(value, {
-          parser: 'babel',
-          plugins: prettierPlugins,
-          useTabs: true,
-        })
-        .replace(
-          /(?<tabs>\t*)(?<other>.*)(?<pre>function *.*\()(?<args>.+)(?<post>\))/g,
-          '$<tabs>$<other>$<pre>\n$<tabs>\t$<args>\n$<tabs>$<post>',
-        );
+      processedCode.value = prettier.format(value, {
+        parser: 'babel',
+        plugins: prettierPlugins,
+        useTabs: true,
+      });
+      // .replace(
+      //   /(?<tabs>\t*)(?<other>.*)(?<pre>function *.*\()(?<args>.+)(?<post>\))/g,
+      //   '$<tabs>$<other>$<pre>\n$<tabs>\t$<args>\n$<tabs>$<post>',
+      // );
       processedCode.valid = true;
     } catch (e) {
       processedCode.value = e.toString();
       processedCode.valid = false;
     }
 
-    processedCode = processedCode.valid
-      ? {
-          ...processedCode,
-          parsed: esprima.parse(processedCode.value, {
-            range: true,
-            loc: true,
-            tokens: true,
-          }),
-        }
-      : processedCode;
+    if (!processedCode.valid) {
+      return processedCode;
+    }
 
-    processedCode = processedCode.valid
-      ? processLines(processedCode)
-      : processedCode;
+    processedCode = {
+      ...processedCode,
+      parsed: esprima.parse(processedCode.value, {
+        range: true,
+        loc: true,
+        tokens: true,
+      }),
+    };
 
-    processedCode = processedCode.valid
-      ? processScopes(processedCode)
-      : processedCode;
+    processedCode = processScopes(processedCode);
+
+    processedCode = processLines(processedCode);
 
     return processedCode;
   }
 
   function processLines(code) {
     var codeProcessedLines = { ...code };
+    var codeLines = [];
+    var codeTokens = [];
     {
       let previousChars = 0;
-      var codeLines = codeProcessedLines.value
-        .split(/(\n)/)
-        .map(function processLine(line) {
-          var processedLine = {
-            line,
+      for (let line of codeProcessedLines.value.split(/(\n)/)) {
+        let startChar = previousChars;
+
+        for (let token of line.split(/([a-zA-Z0-9]+)/g)) {
+          let processedToken = {
+            token,
             startChar: previousChars,
-            endChar: previousChars + line.length,
+            endChar: previousChars + token.length,
           };
-          previousChars = processedLine.endChar;
-          return processedLine;
-        })
-        .filter(function filterEmptyLines(lineObj) {
-          return lineObj.line !== '\n';
-        });
+          previousChars = processedToken.endChar;
+          codeTokens.push(processedToken);
+        }
+
+        let processedLine = {
+          line,
+          startChar,
+          endChar: previousChars,
+        };
+
+        codeLines.push(processedLine);
+      }
     }
 
-    return { ...codeProcessedLines, codeLines };
+    codeLines = codeLines.filter(function filterEmptyLines(processedLine) {
+      return processedLine.line !== '\n';
+    });
+
+    codeTokens = codeTokens.filter(function filterEmptyTokens(processedToken) {
+      return processedToken.token.trim();
+    });
+
+    return { ...codeProcessedLines, codeLines, codeTokens };
   }
 
   /**
@@ -158,28 +194,12 @@ var app = (function App() {
   function processScopes(code) {
     var scopes = escope.analyze(code.parsed, { ecmaVersion: 6 });
 
-    var levels = eslevels.levels(code.parsed, {
-      mode: 'full',
-      escopeOpts: {
-        ecmaVersion: 6,
-      },
-    });
-
-    var levelsNumber = [
-      ...new Set(
-        [...levels].map((level) => {
-          return level[0];
-        }),
-      ),
-    ].length;
-
     return {
       ...code,
       scopes: {
         ...scopes,
         scopesNumber: scopes.scopes.length,
-        levels,
-        levelsNumber,
+        scopesColors: randomColor({ count: scopes.scopes.length, hue: 'blue' }),
       },
     };
   }
@@ -187,22 +207,13 @@ var app = (function App() {
   /**
    *
    */
-  function updateCodeDisplayer(code) {
-    requestAnimationFrame(() => {
-      write(code.value);
-    });
-
-    requestAnimationFrame(function clearBubbles() {
-      restart();
-      clearVisualization();
-    });
-
-    if (code.valid && code.value) {
-      requestAnimationFrame(function setVisualization() {
-        code = setBubbles(code);
-        drawBubbles(code);
+  function writeCode(code) {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        write(code);
+        resolve();
       });
-    }
+    });
   }
 
   /**
@@ -210,6 +221,7 @@ var app = (function App() {
    */
   function write(code) {
     codeDisplayer.innerHTML = '';
+
     var codeLines = code.split('\n');
     codeLines.forEach(function customLineWriting(codeLine) {
       var line = document.createElement('div');
@@ -223,20 +235,30 @@ var app = (function App() {
           }
         });
       }
-      {
-        let lineCode = document.createElement('span');
-        codeLine
-          .split(/([a-zA-Z0-9]+)/g)
-          .filter(function filterEmptyTokens(token) {
-            return token;
-          })
-          .forEach(function tokenizeLine(token) {
-            var word = document.createElement('span');
-            word.textContent = token;
-            lineCode.appendChild(word);
-          });
-        line.appendChild(lineCode);
-      }
+      codeLine
+        .split(/([a-zA-Z0-9]+)/g)
+        .filter(function filterEmptyTokens(token) {
+          return token;
+        })
+        .forEach(function tokenizeLine(token) {
+          if (!token) {
+            return;
+          }
+
+          var word = document.createElement('span');
+          word.textContent = token;
+
+          // if (
+          //   !jsKeywords.find(function findKeyword(keyword) {
+          //     return keyword == token;
+          //   }) &&
+          //   token.match(/([a-zA-Z0-9]+)/g)
+          // ) {
+          //   word.classList.add('variable');
+          // }
+
+          line.appendChild(word);
+        });
       line.classList.add('line');
       codeDisplayer.appendChild(line);
     });
@@ -245,84 +267,185 @@ var app = (function App() {
   /**
    *
    */
-  function setBubbles({ codeLines, scopes, ...rest }) {
+  async function updateCodeDisplayer(code) {
+    await clearVisualization();
+
+    if (code.valid && code.value) {
+      code = setBubbles(code);
+      drawBubbles(code);
+    }
+  }
+
+  /**
+   *
+   */
+  function setBubbles({ scopes, codeLines, codeTokens, ...rest }) {
     var codeLineElements = [...codeDisplayer.getElementsByClassName('line')];
+    var codeTokenElements = [];
+    [...codeLineElements].forEach((codeLineElement) => {
+      codeTokenElements.push(...codeLineElement.querySelectorAll('span'));
+    });
+    codeTokenElements = codeTokenElements.filter(
+      function filterEmptyTokenElements(tokenElement) {
+        return tokenElement.textContent.trim();
+      },
+    );
+
+    console.log(codeLines);
+    console.log(codeTokens);
+    console.log(codeLineElements);
+    console.log(codeTokenElements);
+
+    console.log(scopes);
 
     var bubbles = [];
-
-    for (let scope of scopes.scopes) {
-      let {
+    var preparedOuterScopeVariables = [];
+    for (let [
+      index,
+      {
         block: {
           range: [scopeRangeStart, scopeRangeEnd],
         },
-        variables,
-      } = scope;
-      let scopeColor = randomColor();
-      let scopeBubbleLines = [];
+        through: outerScopeVariables,
+      },
+    ] of scopes.scopes.entries()) {
+      let scopeColor = scopes.scopesColors[index];
 
-      for (let i = 0; i < codeLines.length; i++) {
+      // Identify outer scope variables.
+      for (let reference of outerScopeVariables) {
+        let { identifier } = reference;
+        let {
+          identifier: { name, range: [startChar, endChar] = [0, 0] },
+        } = reference;
+        preparedOuterScopeVariables.push({
+          name,
+          startChar,
+          endChar,
+          color: undefined,
+          identifier,
+        });
+      }
+
+      let scopeBubbleLines = [];
+      let hasFinished = false;
+      let removeFirstLine = false;
+      let removeLastLine = false;
+      for (let i = 0; i < codeLines.length && !hasFinished; i++) {
         if (
           codeLines[i].startChar >= scopeRangeStart &&
           codeLines[i].endChar <= scopeRangeEnd
         ) {
           scopeBubbleLines.push(codeLineElements[i]);
+
+          if (codeLines[i].startChar == scopeRangeStart) {
+            firstLine = true;
+          }
+
+          if (codeLines[i].endChar == scopeRangeEnd) {
+            lastLine = true;
+          }
+
+          if (codeLines[i].endChar >= scopeRangeEnd) {
+            hasFinished = true;
+          }
         }
       }
-      let scopeBubbleVariables = [];
 
-      for (let {
-        name,
-        identifiers: [
-          { loc: { start: startChar, end: endChar } = {} } = {},
-        ] = [],
-      } of variables) {
-        scopeBubbleVariables.push({
-          name,
-          startChar,
-          endChar,
-          color: scopeColor,
-        });
-      }
+      scopeBubbleLines =
+        scopeBubbleLines.slice(
+          removeFirstLine ? 1 : 0,
+          removeLastLine ? -1 : undefined,
+        ) || [];
 
       bubbles.push({
         lines: scopeBubbleLines,
-        scopeBubbleVariables,
         color: scopeColor,
       });
     }
 
-    return { codeLines, scopes, ...rest, bubbles };
+    var scopeBubbleVariables = [];
+    for (let j = 0; j < codeTokens.length; j++) {
+      if (
+        jsKeywords.find(function findKeyword(keyword) {
+          return keyword == codeTokens[j].token;
+        }) ||
+        !codeTokens[j].token.match(/([a-zA-Z0-9]+)/g)
+      ) {
+        continue;
+      }
+
+      let foundOuterScopeVariable = preparedOuterScopeVariables.find(
+        (preparedOuterScopeVariable) => {
+          return (
+            preparedOuterScopeVariable.startChar == codeTokens[j].startChar &&
+            preparedOuterScopeVariable.endChar == codeTokens[j].endChar
+          );
+        },
+      );
+
+      if (!foundOuterScopeVariable) {
+        continue;
+      }
+
+      scopeBubbleVariables.push({
+        ...foundOuterScopeVariable,
+        tokenElement: codeTokenElements[j],
+      });
+    }
+
+    for (let [index, scope] of scopes.scopes.entries()) {
+      for (let {
+        identifiers: [identifier],
+      } of scope.variables) {
+        let scopeBubbleVariable = scopeBubbleVariables.find(
+          function matchReference(scopeBubbleVariable) {
+            return scopeBubbleVariable.identifier == identifier;
+          },
+        );
+
+        if (!scopeBubbleVariable) {
+          continue;
+        }
+
+        scopeBubbleVariable.color = scopes.scopesColors[index];
+      }
+    }
+
+    return {
+      scopes,
+      codeLines,
+      codeTokens,
+      ...rest,
+      bubbles: { scopeBubbles: [...bubbles], scopeBubbleVariables },
+    };
   }
 
   /**
    *
    */
   function drawBubbles({
-    codeLines,
-    bubbles: [{ lines, color }, ...bubbles],
-    ...rest
+    bubbles: {
+      scopeBubbles: [{ lines, color }, ...bubbles],
+      scopeBubbleVariables,
+    },
   }) {
-    var codeLineElements = [...codeDisplayer.getElementsByClassName('line')];
-    var codeDisplayerFigure = scopeBubbles.getBoundingClientRect();
-
-    // GLOBAL.
+    // GLOBAL BUBBLE.
     var { x, y, width, height } = lines[0].getBoundingClientRect();
-    drawBubble(
-      { x, y, width, height: height * lines.length },
-      squareFallback,
-      color,
-      true,
-    );
+    drawBubble({ x, y, width, height: height }, color, true);
 
-    // REST.
+    // SCOPE BUBBLES.
     for (let { lines, color } of bubbles) {
       let { x, y, width, height } = lines[0].getBoundingClientRect();
-      drawBubble(
-        { x, y, width, height: height * lines.length },
-        squareFallback,
-        color,
-        false,
-      );
+
+      drawBubble({ x, y, width, height: height * lines.length }, color, false);
+    }
+
+    // VARIABLE BUBBLES.
+
+    for (let { tokenElement, color } of scopeBubbleVariables) {
+      let { x, y, width, height } = tokenElement.getBoundingClientRect();
+      console.log(color);
+      drawBubble({ x, y, width, height }, color, false);
     }
   }
 
@@ -336,8 +459,7 @@ var app = (function App() {
       width: bubbleWidth = 0,
       height: bubbleHeight = 0,
     } = squareFallback,
-    { x = 0, y = 0 } = squareFallback,
-    color = randomColor(),
+    color = code.scopes.scopesColors[0],
     isGlobal = false,
   ) {
     var bubble = document.createElement('div');
@@ -348,11 +470,9 @@ var app = (function App() {
                     background-color: ${color};
                     width: ${bubbleWidth}px;
                     height: ${bubbleHeight}px;
-                    top: ${bubbleY - y}px;
-                    left: ${bubbleX - x}px;
+                    top: ${bubbleY}px;
+                    left: ${bubbleX}px;
                     `;
-    bubble.style.width = bubbleWidth;
-    bubble.style.height = bubbleHeight;
     scopeBubbles.appendChild(bubble);
   }
 
@@ -360,14 +480,12 @@ var app = (function App() {
    *
    */
   function clearVisualization() {
-    scopeBubbles.innerHTML = '';
-  }
-
-  /**
-   *
-   */
-  function restart() {
-    code = { ...defaultCode };
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        scopeBubbles.innerHTML = '';
+        resolve();
+      });
+    });
   }
 })();
 

@@ -52,7 +52,7 @@
 }
 
 .line {
-  padding: 0px 4px;
+  padding: 2px 4px;
 }
 
 .tab {
@@ -60,33 +60,23 @@
   display: inline-block;
 }
 
-/* .scopes {
-  grid-area: visualizer;
-  height: calc(100% - 20px - 33px);
-  width: calc(100% - 37px);
-  height: 100%;
-  position: absolute;
-  overflow: scroll;
-  pointer-events: none;
-} */
-
 .scopes {
   grid-area: code;
   height: calc(100% - 20px - 33px);
   height: 100%;
-  overflow: auto;
-  pointer-events: none;
   opacity: 0.3;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .scopes__bubble {
-  position: absolute;
-  /* max-width: calc(100% - 16px); */
+  position: fixed;
   border-radius: 4px;
   padding: 4px 0px;
 }
 
 .scopes__bubble--global {
+  height: 100% !important;
   border-radius: 4px;
   padding: 4px 0px;
 }
