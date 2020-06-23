@@ -53,6 +53,7 @@
 
 .line {
   padding: 2px 4px;
+  white-space: nowrap;
 }
 
 .tab {
@@ -62,8 +63,8 @@
 
 .scopes {
   grid-area: code;
-  height: calc(100% - 20px - 33px);
-  height: 100%;
+  height: calc(100% - 17px);
+  width: calc(100% - 17px);
   opacity: 0.3;
   overflow: hidden;
   pointer-events: none;

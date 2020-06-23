@@ -1416,15 +1416,6 @@
   'use strict';
   
   var app = (function App() {
-    // const defaultScope = {
-    //   name: 'global',
-    //   varDeclarations: [],
-    //   varAccesses: [],
-    //   scopes: [],
-    //   startLine: null,
-    //   endLine: null,
-    //   color: '#db1d0f',
-    // };
     const squareFallback = { x: 0, y: 0, width: 0, height: 0 };
     const defaultCode = {
       value: '',
@@ -1613,7 +1604,11 @@
         scopes: {
           ...scopes,
           scopesNumber: scopes.scopes.length,
-          scopesColors: randomColor({ count: scopes.scopes.length, hue: 'blue' }),
+          scopesColors: randomColor({
+            count: scopes.scopes.length,
+            luminosity: 'bright',
+            seed: 'JSSCOPEVISUALIZER',
+          }),
         },
       };
     }
@@ -1752,11 +1747,11 @@
             scopeBubbleLines.push(codeLineElements[i]);
   
             if (codeLines[i].startChar == scopeRangeStart) {
-              firstLine = true;
+              removeFirstLine = true;
             }
   
             if (codeLines[i].endChar == scopeRangeEnd) {
-              lastLine = true;
+              removeLastLine = true;
             }
   
             if (codeLines[i].endChar >= scopeRangeEnd) {
@@ -1811,6 +1806,10 @@
         for (let {
           identifiers: [identifier],
         } of scope.variables) {
+          if (!identifier) {
+            continue;
+          }
+  
           let scopeBubbleVariable = scopeBubbleVariables.find(
             function matchReference(scopeBubbleVariable) {
               return scopeBubbleVariable.identifier == identifier;
@@ -1823,6 +1822,26 @@
   
           scopeBubbleVariable.color = scopes.scopesColors[index];
         }
+  
+        // for (let {
+        //   identifiers: [identifier],
+        // } of scope.variables) {
+        //   if (!identifier) {
+        //     continue;
+        //   }
+  
+        //   let scopeBubbleVariable = scopeBubbleVariables.find(
+        //     function matchReference(scopeBubbleVariable) {
+        //       return scopeBubbleVariable.identifier == identifier;
+        //     },
+        //   );
+  
+        //   if (!scopeBubbleVariable) {
+        //     continue;
+        //   }
+  
+        //   scopeBubbleVariable.color = scopes.scopesColors[index];
+        // }
       }
   
       return {
@@ -1843,23 +1862,96 @@
         scopeBubbleVariables,
       },
     }) {
+      var {
+        x: minX,
+        y: minVisibleY,
+        height: minVisibleHeight,
+      } = codeDisplayer.getBoundingClientRect();
+  
       // GLOBAL BUBBLE.
       var { x, y, width, height } = lines[0].getBoundingClientRect();
       drawBubble({ x, y, width, height: height }, color, true);
   
       // SCOPE BUBBLES.
       for (let { lines, color } of bubbles) {
-        let { x, y, width, height } = lines[0].getBoundingClientRect();
+        let {
+          y: lineY,
+          width: lineWidth,
+          height: lineHeight,
+        } = lines[0].getBoundingClientRect();
   
-        drawBubble({ x, y, width, height: height * lines.length }, color, false);
+        if (
+          lineY < minVisibleY ||
+          lineY + lineHeight > minVisibleY + minVisibleHeight
+        ) {
+          continue;
+        }
+  
+        var visibleLines = [...lines];
+  
+        while (
+          lineY + lineHeight * (visibleLines.length + 1) >
+          minVisibleY + minVisibleHeight
+        ) {
+          visibleLines.pop();
+        }
+  
+        let tabsWidth = 0;
+        let { x: lineX } = [...lines[0].querySelectorAll('span')]
+          .filter(function filterEmptyTokens(token) {
+            return token.textContent;
+          })[0]
+          .getBoundingClientRect();
+  
+        for (let token of [...lines[0].querySelectorAll('span.tab')]) {
+          console.log(token);
+  
+          let { width: tabWidth } = token.getBoundingClientRect();
+  
+          tabsWidth += tabWidth;
+        }
+  
+        let bubbleX = Math.max(lineX, minX);
+  
+        drawBubble(
+          {
+            x: bubbleX,
+            y: lineY,
+            width: bubbleX == lineX ? lineWidth - tabsWidth - 6 : width,
+            height: lineHeight * visibleLines.length,
+          },
+          color,
+          false,
+        );
       }
   
       // VARIABLE BUBBLES.
   
       for (let { tokenElement, color } of scopeBubbleVariables) {
-        let { x, y, width, height } = tokenElement.getBoundingClientRect();
-        console.log(color);
-        drawBubble({ x, y, width, height }, color, false);
+        let {
+          x: tokenX,
+          y: tokenY,
+          width: tokenWidth,
+          height: tokenHeight,
+        } = tokenElement.getBoundingClientRect();
+  
+        if (
+          tokenY < minVisibleY ||
+          tokenY + tokenHeight > minVisibleY + minVisibleHeight
+        ) {
+          continue;
+        }
+  
+        drawBubble(
+          {
+            x: Math.max(tokenX, minX),
+            y: tokenY,
+            width: tokenWidth,
+            height: tokenHeight,
+          },
+          color,
+          false,
+        );
       }
     }
   
@@ -1904,7 +1996,6 @@
   })();
   
   app.bootstrap();
-  
   
   },{"escope":78,"esprima":88}],8:[function(require,module,exports){
   "use strict";
