@@ -1,4 +1,4 @@
-const cacheName = 'nasag-portfolio';
+const cacheName = 'jsScopeVisualizer';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -12,9 +12,16 @@ self.addEventListener('install', (e) => {
         './src/app/styles/mediaqueries.css',
         './src/app/bundle.js',
         './lib/codemirror.js',
-        './lib/codemirror.js',
         './lib/randomColor.js',
         './lib/keywords.js',
+        './assets/icons/favicon.ico',
+        './assets/icons/icon-64.png',
+        './assets/icons/icon-96.png',
+        './assets/icons/icon-128.png',
+        './assets/icons/icon-192.png',
+        './assets/icons/icon-256.png',
+        './assets/icons/icon-512.png',
+        './assets/icons/icon-1080.png',
         './manifest.json',
       ]);
     }),
