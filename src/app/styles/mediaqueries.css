@@ -16,10 +16,10 @@
   }
 
   .scopes--vertical-scrollbar {
-    width: calc(100% - 4px);
+    width: 100%;
   }
-  
+
   .scopes--horizontal-scrollbar {
-    height: calc(100% - 4px);
+    height: 100%;
   }
 }
