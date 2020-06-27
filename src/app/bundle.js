@@ -1484,7 +1484,7 @@
         mode: 'application/javascript',
         value: ``,
         lineNumbers: true,
-        lineWrapping: true,
+        lineWrapping: false,
         autofocus: true,
         readOnly: false,
         tabSize: 2,
@@ -1498,8 +1498,25 @@
      *
      */
     async function handleInput(event) {
-      code = processCode(code, event.getValue());
+      try {
+        code = processCode(code, event.getValue());
+      } catch (e) {
+        await clearCode();
+        await clearBubbles();
+        displayError(e);
+        return;
+      }
+  
       await writeCode(code.value);
+  
+      if (!code.valid) {
+        await clearBubbles();
+        return;
+      }
+  
+      styleCodeEditor();
+  
+      code = setBubbles(code);
       updateCodeDisplayer(code);
     }
   
@@ -1607,7 +1624,7 @@
           scopesColors: randomColor({
             count: scopes.scopes.length,
             luminosity: 'bright',
-            seed: 'JSSCOPEVISUALIZER',
+            seed: 'javascript',
           }),
         },
       };
@@ -1676,11 +1693,32 @@
     /**
      *
      */
+    function styleCodeEditor() {
+      var verticalScrollbar =
+        codeDisplayer.scrollHeight > codeDisplayer.clientHeight;
+  
+      if (verticalScrollbar) {
+        scopeBubbles.classList.add('scopes--vertical-scrollbar');
+      } else {
+        scopeBubbles.classList.remove('scopes--vertical-scrollbar');
+      }
+  
+      var horizontalScrollbar =
+        codeDisplayer.scrollWidth > codeDisplayer.clientWidth;
+  
+      if (horizontalScrollbar) {
+        scopeBubbles.classList.add('scopes--horizontal-scrollbar');
+      } else {
+        scopeBubbles.classList.remove('scopes--horizontal-scrollbar');
+      }
+    }
+    /**
+     *
+     */
     async function updateCodeDisplayer(code) {
-      await clearVisualization();
+      await clearBubbles();
   
       if (code.valid && code.value) {
-        code = setBubbles(code);
         drawBubbles(code);
       }
     }
@@ -1700,24 +1738,16 @@
         },
       );
   
-      console.log(codeLines);
-      console.log(codeTokens);
-      console.log(codeLineElements);
-      console.log(codeTokenElements);
-  
-      console.log(scopes);
-  
       var bubbles = [];
       var preparedOuterScopeVariables = [];
-      for (let [
-        index,
-        {
+      for (let [index, scope] of scopes.scopes.entries()) {
+        let {
           block: {
             range: [scopeRangeStart, scopeRangeEnd],
           },
           through: outerScopeVariables,
-        },
-      ] of scopes.scopes.entries()) {
+        } = scope;
+  
         let scopeColor = scopes.scopesColors[index];
   
         // Identify outer scope variables.
@@ -1732,6 +1762,7 @@
             endChar,
             color: undefined,
             identifier,
+            scope,
           });
         }
   
@@ -1806,42 +1837,41 @@
         for (let {
           identifiers: [identifier],
         } of scope.variables) {
-          if (!identifier) {
+          if (index == 0 || !identifier) {
             continue;
           }
   
-          let scopeBubbleVariable = scopeBubbleVariables.find(
-            function matchReference(scopeBubbleVariable) {
-              return scopeBubbleVariable.identifier == identifier;
+          let identifiedVariables = scopeBubbleVariables.filter(
+            function matchIdentifier(scopeBubbleVariable) {
+              var areEqual = true;
+              for (let key of Object.keys(scopeBubbleVariable.identifier)) {
+                if (key == 'range' || key == 'loc') {
+                  continue;
+                }
+  
+                if (identifier[key] != scopeBubbleVariable.identifier[key]) {
+                  areEqual = false;
+                  break;
+                }
+              }
+  
+              return areEqual;
             },
           );
   
-          if (!scopeBubbleVariable) {
+          if (!scopeBubbleVariables.length > 0) {
             continue;
           }
   
-          scopeBubbleVariable.color = scopes.scopesColors[index];
+          for (let scopeBubbleVariable of identifiedVariables) {
+            if (isAncestorScope(scope, scopeBubbleVariable.scope)) {
+              scopeBubbleVariable.color = scopes.scopesColors[index];
+              console.log('yay');
+            } else {
+              console.log('dumb');
+            }
+          }
         }
-  
-        // for (let {
-        //   identifiers: [identifier],
-        // } of scope.variables) {
-        //   if (!identifier) {
-        //     continue;
-        //   }
-  
-        //   let scopeBubbleVariable = scopeBubbleVariables.find(
-        //     function matchReference(scopeBubbleVariable) {
-        //       return scopeBubbleVariable.identifier == identifier;
-        //     },
-        //   );
-  
-        //   if (!scopeBubbleVariable) {
-        //     continue;
-        //   }
-  
-        //   scopeBubbleVariable.color = scopes.scopesColors[index];
-        // }
       }
   
       return {
@@ -1851,6 +1881,18 @@
         ...rest,
         bubbles: { scopeBubbles: [...bubbles], scopeBubbleVariables },
       };
+  
+      function isAncestorScope(ancestorScope, scope) {
+        if (scope == null) {
+          return false;
+        }
+  
+        if (scope == ancestorScope) {
+          return true;
+        }
+  
+        return isAncestorScope(ancestorScope, scope.upper);
+      }
     }
   
     /**
@@ -1863,62 +1905,61 @@
       },
     }) {
       var {
-        x: minX,
+        x: minVisibleX,
         y: minVisibleY,
         height: minVisibleHeight,
-      } = codeDisplayer.getBoundingClientRect();
+        width: minVisibleWidth,
+      } = scopeBubbles.getBoundingClientRect();
+      var maxVisibleY = minVisibleY + minVisibleHeight;
+      var maxVisibleX = minVisibleX + minVisibleWidth;
   
       // GLOBAL BUBBLE.
       var { x, y, width, height } = lines[0].getBoundingClientRect();
       drawBubble({ x, y, width, height: height }, color, true);
   
       // SCOPE BUBBLES.
-      for (let { lines, color } of bubbles) {
+      for (let { lines: bubbleLines, color } of bubbles) {
         let {
           y: lineY,
           width: lineWidth,
           height: lineHeight,
-        } = lines[0].getBoundingClientRect();
+        } = bubbleLines[0].getBoundingClientRect();
   
-        if (
-          lineY < minVisibleY ||
-          lineY + lineHeight > minVisibleY + minVisibleHeight
-        ) {
+        let { visibleLines, newLineHeight } = getVisibleLines(
+          Object.freeze(bubbleLines),
+          { lineY, lineHeight },
+          { minVisibleY, maxVisibleY },
+        );
+  
+        if (visibleLines.length == 0) {
           continue;
         }
   
-        var visibleLines = [...lines];
-  
-        while (
-          lineY + lineHeight * (visibleLines.length + 1) >
-          minVisibleY + minVisibleHeight
-        ) {
-          visibleLines.pop();
-        }
-  
         let tabsWidth = 0;
-        let { x: lineX } = [...lines[0].querySelectorAll('span')]
+        let { x: lineX } = [...bubbleLines[0].querySelectorAll('span')]
           .filter(function filterEmptyTokens(token) {
             return token.textContent;
           })[0]
           .getBoundingClientRect();
   
-        for (let token of [...lines[0].querySelectorAll('span.tab')]) {
-          console.log(token);
-  
+        for (let token of [...bubbleLines[0].querySelectorAll('span.tab')]) {
           let { width: tabWidth } = token.getBoundingClientRect();
   
           tabsWidth += tabWidth;
         }
   
-        let bubbleX = Math.max(lineX, minX);
+        let bubbleX = Math.max(lineX, minVisibleX);
+        let bubbleY = Math.max(lineY, minVisibleY);
   
         drawBubble(
           {
             x: bubbleX,
-            y: lineY,
+            y: bubbleY,
             width: bubbleX == lineX ? lineWidth - tabsWidth - 6 : width,
-            height: lineHeight * visibleLines.length,
+            height: Math.min(
+              lineHeight * (visibleLines.length - 1) + newLineHeight,
+              maxVisibleY,
+            ),
           },
           color,
           false,
@@ -1926,7 +1967,6 @@
       }
   
       // VARIABLE BUBBLES.
-  
       for (let { tokenElement, color } of scopeBubbleVariables) {
         let {
           x: tokenX,
@@ -1935,24 +1975,96 @@
           height: tokenHeight,
         } = tokenElement.getBoundingClientRect();
   
-        if (
-          tokenY < minVisibleY ||
-          tokenY + tokenHeight > minVisibleY + minVisibleHeight
-        ) {
+        if (tokenY < minVisibleY || tokenY + tokenHeight > maxVisibleY) {
           continue;
+        }
+  
+        let variableX = Math.max(tokenX, minVisibleX);
+        let variableY = Math.max(tokenY, minVisibleY);
+        let variableWidth;
+  
+        if (variableX + tokenWidth > maxVisibleX) {
+          if (variableX == minVisibleX) {
+            // The bubble overlaps both sides.
+            variableWidth = minVisibleWidth;
+          } else {
+            // The bubble overlaps the right.
+            variableWidth = tokenWidth - (tokenX + tokenWidth - maxVisibleX);
+          }
+        } else {
+          if (variableX == minVisibleX) {
+            // The bubble overlaps the left.
+            variableWidth = tokenWidth - (minVisibleX - tokenX);
+          } else {
+            // It doesn't overlap.
+            variableWidth = tokenWidth;
+          }
         }
   
         drawBubble(
           {
-            x: Math.max(tokenX, minX),
-            y: tokenY,
-            width: tokenWidth,
+            x: variableX,
+            y: variableY,
+            width: variableWidth,
             height: tokenHeight,
           },
           color,
           false,
         );
       }
+    }
+  
+    /**
+     *
+     */
+    function getVisibleLines(
+      lines,
+      { lineY, lineHeight } = {},
+      { minVisibleY, maxVisibleY } = {},
+    ) {
+      var visibleLines = [...lines];
+  
+      while (lineY + lineHeight < minVisibleY && visibleLines.length > 0) {
+        visibleLines.shift();
+  
+        if (!visibleLines.length > 0) {
+          break;
+        }
+  
+        ({ y: lineY } = visibleLines[0].getBoundingClientRect());
+      }
+  
+      if (!visibleLines.length > 0) {
+        return { visibleLines: [], newLineHeight: 0 };
+      }
+  
+      // if (
+      //   lineY < minVisibleY ||
+      //   lineY + lineHeight > minVisibleY + minVisibleHeight
+      // ) {
+      //   continue;
+      // }
+  
+      while (
+        lineY + lineHeight * visibleLines.length > maxVisibleY &&
+        visibleLines.length > 0
+      ) {
+        visibleLines.pop();
+  
+        if (!visibleLines.length > 0) {
+          break;
+        }
+  
+        ({ height: newLineHeight } = visibleLines[0].getBoundingClientRect());
+      }
+  
+      if (!visibleLines.length > 0) {
+        return { visibleLines: [], newLineHeight: 0 };
+      }
+  
+      var newLineHeight = lineHeight;
+  
+      return { visibleLines, newLineHeight };
     }
   
     /**
@@ -1979,13 +2091,15 @@
                       top: ${bubbleY}px;
                       left: ${bubbleX}px;
                       `;
-      scopeBubbles.appendChild(bubble);
+      requestAnimationFrame(() => {
+        scopeBubbles.appendChild(bubble);
+      });
     }
   
     /**
      *
      */
-    function clearVisualization() {
+    function clearBubbles() {
       return new Promise((resolve) => {
         requestAnimationFrame(() => {
           scopeBubbles.innerHTML = '';
@@ -1993,9 +2107,30 @@
         });
       });
     }
+  
+    /**
+     *
+     */
+    function clearCode() {
+      return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          codeDisplayer.innerHTML = '';
+          resolve();
+        });
+      });
+    }
+  
+    /**
+     *
+     */
+    function displayError(e) {
+      console.log(e);
+      // TO-DO
+    }
   })();
   
   app.bootstrap();
+  
   
   },{"escope":78,"esprima":88}],8:[function(require,module,exports){
   "use strict";

@@ -63,11 +63,21 @@
 
 .scopes {
   grid-area: code;
-  height: calc(100% - 17px);
-  width: calc(100% - 17px);
+  height: 100%;
+  width: 100%;
+  /* height: calc(100% - 17px); */
+  /* width: calc(100% - 17px); */
   opacity: 0.3;
   overflow: hidden;
   pointer-events: none;
+}
+
+.scopes--vertical-scrollbar {
+  width: calc(100% - 16px);
+}
+
+.scopes--horizontal-scrollbar {
+  height: calc(100% - 16px);
 }
 
 .scopes__bubble {

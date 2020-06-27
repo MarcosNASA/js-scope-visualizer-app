@@ -1,8 +1,8 @@
 {
   "name": "JS Scope Visualizer",
   "short_name": "JS SV",
-  "theme_color": "#",
-  "background_color": "#ffffff",
+  "theme_color": "#f0db4f",
+  "background_color": "#323330",
   "display": "minimal-ui",
   "scope": "./",
   "start_url": "./index.html",

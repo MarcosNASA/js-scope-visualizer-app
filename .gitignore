@@ -5,8 +5,9 @@
 
 Test.txt
 
+src/app/main.js
+
 node_modules
 assets
 
-lib
-lib/*
+devLib
