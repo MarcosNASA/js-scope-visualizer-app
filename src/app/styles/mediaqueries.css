@@ -14,7 +14,12 @@
   :root {
     font-size: 9px;
   }
-}
 
-@media screen and (max-width: 450px) {
+  .scopes--vertical-scrollbar {
+    width: calc(100% - 4px);
+  }
+  
+  .scopes--horizontal-scrollbar {
+    height: calc(100% - 4px);
+  }
 }

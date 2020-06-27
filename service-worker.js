@@ -14,6 +14,7 @@ self.addEventListener('install', (e) => {
         './lib/codemirror.js',
         './lib/randomColor.js',
         './lib/keywords.js',
+        './lib/codemirror.css',
         './assets/icons/favicon.ico',
         './assets/icons/icon-64.png',
         './assets/icons/icon-96.png',
