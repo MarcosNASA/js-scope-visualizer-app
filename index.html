@@ -13,19 +13,19 @@
       <meta name="viewport"
             content="width=device-width, initial-scale=1">
       <meta name="theme-color"
-            content="#">
+            content="#f0db4f">
       <meta property="og:title"
             content="JS Scope Visualizer" />
       <meta property="og:type"
             content="website" />
       <meta property="og:url"
-            content="https://marcosnasa.github.io/JS-3-pillars/scope" />
+            content="" />
       <meta property="og:image"
-            content="https://marcosnasa.github.io/assets/images/home.jpg" />
+            content="./assets/images/ecma-logo.png" />
       <meta property="og:description"
             content="JavaScript scope visualizer for learning purposes." />
       <link rel="canonical"
-            href="https://marcosnasa.github.io/js-3-pillars/scope" />
+            href="" />
       <link rel="shortcut icon"
             type="image/x-icon"
             href="./assets/icons/favicon.ico" />
@@ -72,11 +72,11 @@
       <script src="./src/app/bundle.js"
               defer></script>
       <script>
-            // if ('serviceWorker' in navigator) {
-            //     navigator.serviceWorker.register('./service-worker.js', {
-            //         scope: './'
-            //     });
-            // }
+            if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.register('./service-worker.js', {
+                        scope: './'
+                  });
+            }
       </script>
       <link rel="manifest"
             href="./manifest.json">

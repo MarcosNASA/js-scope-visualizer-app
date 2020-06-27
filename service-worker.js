@@ -11,6 +11,10 @@ self.addEventListener('install', (e) => {
         './src/app/styles/visualizer.css',
         './src/app/styles/mediaqueries.css',
         './src/app/bundle.js',
+        './lib/codemirror.js',
+        './lib/codemirror.js',
+        './lib/randomColor.js',
+        './lib/keywords.js',
         './manifest.json',
       ]);
     }),
