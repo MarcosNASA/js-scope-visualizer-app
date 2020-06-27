@@ -14,7 +14,7 @@ Visualize JS Scope as bubbles.
  - [CodeMirror](https://codemirror.net/).
 
 ## Authors
--   **Marcos NASA G**  -  _Initial work_  -  [Marcos NASA G](https://github.com/MarcosNASA).
+-   **Marcos NASA G**  -  _Web app_  -  [Marcos NASA G](https://github.com/MarcosNASA).
 
 ## License
 This project is licensed under the MIT License - see the  [LICENSE.md].(https://github.com/MarcosNASA/js-scope-visualizer/LICENSE.md)  file for details.
