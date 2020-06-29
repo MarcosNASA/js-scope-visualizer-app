@@ -69,14 +69,16 @@
               defer></script>
       <script src="https://unpkg.com/esprima@~4.0/dist/esprima.js"
               defer></script>
-      <script src="./src/app/bundle.js"
+              <script src="lib/libs.js"
+              defer></script>
+      <script src="./src/app/main.js"
               defer></script>
       <script>
-            if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.register('./service-worker.js', {
-                        scope: './'
-                  });
-            }
+            // if ('serviceWorker' in navigator) {
+            //       navigator.serviceWorker.register('./service-worker.js', {
+            //             scope: './'
+            //       });
+            // }
       </script>
       <link rel="manifest"
             href="./manifest.json">
