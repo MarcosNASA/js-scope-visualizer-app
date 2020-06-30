@@ -10,11 +10,11 @@ Visualize JS Scope as bubbles.
 
  - [Prettier](https://prettier.io/).
  - [EScopes](https://github.com/estools/escope).
- - [RandomColor.js](https://github.com/davidmerfield/randomColor).
+ - [Leonardo](https://github.com/adobe/leonardo).
  - [CodeMirror](https://codemirror.net/).
 
 ## Authors
 -   **Marcos NASA G**  -  _Web app_  -  [Marcos NASA G](https://github.com/MarcosNASA).
 
 ## License
-This project is licensed under the MIT License - see the  [LICENSE.md].(https://github.com/MarcosNASA/js-scope-visualizer/LICENSE.md)  file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/MarcosNASA/js-scope-visualizer/LICENSE.md) file for details.

@@ -5,8 +5,6 @@
 
 Test.txt
 
-/src/app/main.js
-
 node_modules
 assets
 
@@ -14,3 +12,5 @@ devLib
 
 firebase*
 .firebase*
+
+lib/libs.js
