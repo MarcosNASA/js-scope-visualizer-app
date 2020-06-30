@@ -342,7 +342,6 @@ var app = (function App() {
    *
    */
   function setBubbles({ scopes, codeLines, codeTokens, ...rest }) {
-    console.log(scopes);
     var codeLineElements = [...codeDisplayer.getElementsByClassName('line')];
     var codeTokenElements = [];
     [...codeLineElements].forEach((codeLineElement) => {
