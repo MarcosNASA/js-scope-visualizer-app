@@ -17,4 +17,4 @@ Visualize JS Scope as bubbles.
 -   **Marcos NASA G**  -  _Web app_  -  [Marcos NASA G](https://github.com/MarcosNASA).
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/MarcosNASA/js-scope-visualizer/LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/MarcosNASA/js-scope-visualizer/blob/master/LICENSE.MD) file for details.
