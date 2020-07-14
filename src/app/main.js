@@ -85,11 +85,14 @@ var app = (function App() {
       value: ``,
       lineNumbers: true,
       lineWrapping: false,
+      matchBrackets: true,
       autofocus: true,
       readOnly: false,
       tabSize: 2,
       tabindex: 0,
     });
+
+    codeMirror.setOption('theme', 'ayu-mirage');
 
     return codeMirror;
   }

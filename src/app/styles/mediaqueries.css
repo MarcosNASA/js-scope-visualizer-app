@@ -1,12 +1,11 @@
 @media screen and (max-width: 724px) {
   .app {
     grid-template-areas:
-      'header header'
-      'code code'
-      'visualizer visualizer'
-      'footer footer';
-    grid-template-rows: 100px auto auto 100px;
-    grid-template-columns: 1fr 1fr;
+      'header'
+      'code'
+      'visualizer';
+    grid-template-rows: 80px auto auto;
+    grid-template-columns: 1fr;
   }
 }
 

@@ -14,3 +14,5 @@ firebase*
 .firebase*
 
 lib/libs.js
+
+robots.txt

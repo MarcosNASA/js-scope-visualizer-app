@@ -1,33 +1,8 @@
 /* VISUALIZER */
 
-.visualizer {
-  grid-area: visualizer;
-  height: calc(100vh - 200px);
-  width: 100%;
-  padding: 15px var(--padding-sm);
-  display: grid;
-  grid-template-areas: 'visualizer';
-}
-
-.code-displayer {
-  grid-area: visualizer;
-  height: 100%;
-  width: 100%;
-  padding: var(--padding-sm) 0 var(--padding-md) 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.code-displayer__title {
-  height: 20px;
-  padding: 0 10px;
-}
-
 .custom-code-editor {
-  height: calc(100% - var(--padding-sm));
+  grid-area: visualizer;
+  height: 100vh;
   width: 100%;
   display: grid;
   grid-template-areas: 'lines code';
