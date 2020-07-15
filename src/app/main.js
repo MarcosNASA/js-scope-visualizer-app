@@ -210,22 +210,31 @@ var app = (function App() {
     var scopes = escope.analyze(code.parsed, { ecmaVersion: 6 });
 
     var scopesNumber = scopes.scopes.length;
-    var ratios = [];
-    for (let i = 0; i < Math.ceil(scopesNumber / 5); i++) {
-      ratios.push(i + 2);
-    }
+    var ratios = [1.2, 1.35, 1.5, 1.75, 2, 2.3, 2.8, 3.2, 4.2, 5.2];
+    // for (let i = 0; i < Math.ceil(scopesNumber / 7); i++) {
+    //   ratios.push(i + 2 < 15 ? i + 2 : 15);
+    // }
 
-    var colorScales = [
+    /*
       '#F02828',
       '#F0DB4F',
       '#41C87C',
       '#5DADD5',
       '#EC93E9',
+    */
+
+    var colorScales = [
+      '#FF3333',
+      '#FFA759',
+      '#F0DB4F',
+      '#BAE67E',
+      '#5CCFE6',
+      '#AE81FF',
     ].map(function processColor(color, index) {
       return {
         name: `${index}`,
         colorKeys: [color],
-        colorspace: 'RGB',
+        colorspace: 'CAM02',
         ratios,
       };
     });
@@ -233,7 +242,7 @@ var app = (function App() {
     var theme = leonardo.generateAdaptiveTheme({
       colorScales,
       baseScale: '1',
-      brightness: 90,
+      brightness: 100,
     });
 
     var scopesColors = [];
@@ -246,6 +255,8 @@ var app = (function App() {
         scopesColors.push(value);
       }
     }
+
+    // scopesColors[0] = '#0D1019';
 
     return {
       ...code,

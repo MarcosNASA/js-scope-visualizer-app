@@ -7,14 +7,13 @@
   display: grid;
   grid-template-areas: 'lines code';
   grid-template-columns: 29px auto;
+  background-color: var(--light-color);
 }
 
 .custom-code-editor__lines {
   grid-area: lines;
   width: 29px;
   height: 100%;
-  background-color: white;
-  border-right: 1px solid #ddd;
 }
 
 .custom-code-editor__editor {
@@ -23,11 +22,13 @@
   width: 100%;
   padding-top: 4px;
   font-family: monospace;
+  color: var(--font-color-code-dark);
   overflow: auto;
+  z-index: 1;
 }
 
 .line {
-  padding: 2px 4px;
+  padding: 6px 4px;
   white-space: nowrap;
 }
 
@@ -40,7 +41,7 @@
   grid-area: code;
   height: 100%;
   width: 100%;
-  opacity: 0.3;
+  opacity: 1;
   overflow: hidden;
   pointer-events: none;
 }
