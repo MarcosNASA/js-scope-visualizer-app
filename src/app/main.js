@@ -208,20 +208,7 @@ var app = (function App() {
    */
   function processScopes(code) {
     var scopes = escope.analyze(code.parsed, { ecmaVersion: 6 });
-
-    var scopesNumber = scopes.scopes.length;
     var ratios = [1.2, 1.35, 1.5, 1.75, 2, 2.3, 2.8, 3.2, 4.2, 5.2];
-    // for (let i = 0; i < Math.ceil(scopesNumber / 7); i++) {
-    //   ratios.push(i + 2 < 15 ? i + 2 : 15);
-    // }
-
-    /*
-      '#F02828',
-      '#F0DB4F',
-      '#41C87C',
-      '#5DADD5',
-      '#EC93E9',
-    */
 
     var colorScales = [
       '#FF3333',

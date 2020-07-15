@@ -63,8 +63,6 @@
             <link href="./src/app/styles/visualizer.css"
                   rel="stylesheet">
       </noscript>
-      <script src="lib/javascript.js"
-              async></script>
       <script src="lib/keywords.js"
               async></script>
       <script src="lib/prettier.js"
@@ -77,14 +75,16 @@
               async></script>
       <script src="lib/codemirror.js"
               defer></script>
+      <script src="lib/javascript.js"
+              defer></script>
       <script src="./src/app/main.js"
               defer></script>
       <script>
-            // if ('serviceWorker' in navigator) {
-            //       navigator.serviceWorker.register('/service-worker.js', {
-            //             scope: './'
-            //       });
-            // }
+            if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.register('/service-worker.js', {
+                        scope: './'
+                  });
+            }
       </script>
       <link rel="manifest"
             href="./manifest.json">
