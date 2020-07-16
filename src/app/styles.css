@@ -39,7 +39,7 @@
 }
 
 a:focus {
-  outline: 1px solid var(--main-color);
+  outline: 1px solid var(--light-color);
 }
 
 .app {
