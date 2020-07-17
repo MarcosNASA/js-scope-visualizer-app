@@ -17,6 +17,7 @@
   align-items: flex-end;
   justify-content: flex-end;
   position: absolute;
+  top: 0px;
   padding: 6px 8px;
   margin-left: -31px;
   color: #4e4e4e;

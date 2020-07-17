@@ -602,7 +602,6 @@ var app = (function App() {
 
       let {
         y: lineY,
-        width: lineWidth,
         height: lineHeight,
       } = bubbleLines[0].getBoundingClientRect();
 
@@ -616,18 +615,26 @@ var app = (function App() {
         continue;
       }
 
-      let tabsWidth = 0;
+      let lastTokens = [];
+      for (let visibleLine of visibleLines) {
+        if (!(visibleLine.children.length > 0)) {
+          continue;
+        }
+
+        lastTokens.push(visibleLine.children[visibleLine.children.length - 1]);
+      }
+
+      let bubbleEnd =
+        lastTokens.reduce(function maxLineWidth(maxWidth, token) {
+          let { x: tokenX, width: tokenWidth } = token.getBoundingClientRect();
+          return Math.max(maxWidth, tokenX + tokenWidth);
+        }, 0) || maxVisibleX;
+
       let { x: lineX } = [...bubbleLines[0].querySelectorAll('span')]
         .filter(function filterEmptyTokens(token) {
           return token.textContent;
         })[0]
         .getBoundingClientRect();
-
-      for (let token of [...bubbleLines[0].querySelectorAll('span.tab')]) {
-        let { width: tabWidth } = token.getBoundingClientRect();
-
-        tabsWidth += tabWidth;
-      }
 
       let bubbleX = Math.max(lineX, minVisibleX);
       let bubbleY = Math.max(lineY, minVisibleY);
@@ -636,8 +643,7 @@ var app = (function App() {
         {
           x: bubbleX,
           y: bubbleY,
-          width:
-            (bubbleX == lineX ? lineWidth - tabsWidth : minVisibleWidth) - 6,
+          width: Math.min(bubbleEnd - bubbleX + 8.8, maxVisibleX - bubbleX - 6), // maxVisibleX - bubbleX - 6)
           height: Math.min(
             lineHeight * (visibleLines.length - 1) + newLineHeight,
             maxVisibleY,
@@ -671,6 +677,7 @@ var app = (function App() {
         } else {
           // The bubble overlaps the right.
           variableWidth = tokenWidth - (tokenX + tokenWidth - maxVisibleX) - 6;
+          variableWidth = maxVisibleX - variableX - 12;
         }
       } else {
         if (variableX == minVisibleX) {
