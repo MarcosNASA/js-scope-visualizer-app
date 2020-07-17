@@ -35,11 +35,14 @@ var app = (function App() {
      *
      */
     function setEventListeners() {
-      codeEditor.on('change', handleInput);
-      var redrawDebounced = debounce(reDraw, 60);
-      codeDisplayer.addEventListener('scroll', redrawDebounced, false);
-      window.addEventListener('scroll', redrawDebounced, false);
-      window.addEventListener('resize', redrawDebounced, false);
+      var handleInputDebounced = debounce(handleInput, 6000, false);
+      codeEditor.on('change', handleInputDebounced);
+      // var redrawDebounced = debounce(reDraw, 60);
+      codeDisplayer.addEventListener('scroll', reDraw, {
+        passive: true,
+      });
+      window.addEventListener('scroll', reDraw, { passive: true });
+      window.addEventListener('resize', reDraw, { passive: true });
 
       /**
        *
