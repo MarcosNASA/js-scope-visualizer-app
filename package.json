@@ -11,20 +11,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarcosNASA/js-scope-visualizer.git"
+    "url": "git+https://github.com/MarcosNASA/js-scope-visualizer-app.git"
   },
   "keywords": [
     "JavaScript",
     "JS",
     "Scope",
-    "Visualizer"
+    "Visualizer",
+    "App"
   ],
   "author": "Marcos NASA G",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MarcosNASA/js-scope-visualizer/issues"
+    "url": "https://github.com/MarcosNASA/js-scope-visualizer-app/issues"
   },
-  "homepage": "https://github.com/MarcosNASA/js-scope-visualizer#readme",
+  "homepage": "https://github.com/MarcosNASA/js-scope-visualizer-app#readme",
   "devDependencies": {
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3"

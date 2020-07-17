@@ -103,6 +103,11 @@ var app = (function App() {
   async function handleInput(event) {
     try {
       code = processCode(code, event.getValue());
+
+      if (!code.valid) {
+        await clearBubbles();
+        return;
+      }
     } catch (e) {
       await clearCode();
       await clearBubbles();
@@ -111,11 +116,6 @@ var app = (function App() {
     }
 
     await writeCode(code.value);
-
-    if (!code.valid) {
-      await clearBubbles();
-      return;
-    }
 
     styleCodeEditor();
 
@@ -274,8 +274,15 @@ var app = (function App() {
     codeDisplayer.innerHTML = '';
 
     var codeLines = code.split('\n');
-    codeLines.forEach(function customLineWriting(codeLine) {
+    codeLines.forEach(function customLineWriting(codeLine, index) {
       var line = document.createElement('div');
+
+      let lineCount = document.createElement('div');
+      lineCount.classList.add('line-count');
+      lineCount.textContent = index + 1;
+      lineCount.style.top = `0px`;
+      line.appendChild(lineCount);
+
       {
         let codeFragments = codeLine.split('\t');
         codeFragments.forEach(function addTabs(codeFragment) {
@@ -310,24 +317,29 @@ var app = (function App() {
    *
    */
   function styleCodeEditor() {
-    var verticalScrollbar =
-      codeDisplayer.scrollHeight > codeDisplayer.clientHeight;
+    limitBubbleArea();
 
-    if (verticalScrollbar) {
-      scopeBubbles.classList.add('scopes--vertical-scrollbar');
-    } else {
-      scopeBubbles.classList.remove('scopes--vertical-scrollbar');
-    }
+    function limitBubbleArea() {
+      var verticalScrollbar =
+        codeDisplayer.scrollHeight > codeDisplayer.clientHeight;
 
-    var horizontalScrollbar =
-      codeDisplayer.scrollWidth > codeDisplayer.clientWidth;
+      if (verticalScrollbar) {
+        scopeBubbles.classList.add('scopes--vertical-scrollbar');
+      } else {
+        scopeBubbles.classList.remove('scopes--vertical-scrollbar');
+      }
 
-    if (horizontalScrollbar) {
-      scopeBubbles.classList.add('scopes--horizontal-scrollbar');
-    } else {
-      scopeBubbles.classList.remove('scopes--horizontal-scrollbar');
+      var horizontalScrollbar =
+        codeDisplayer.scrollWidth > codeDisplayer.clientWidth;
+
+      if (horizontalScrollbar) {
+        scopeBubbles.classList.add('scopes--horizontal-scrollbar');
+      } else {
+        scopeBubbles.classList.remove('scopes--horizontal-scrollbar');
+      }
     }
   }
+
   /**
    *
    */
@@ -518,7 +530,7 @@ var app = (function App() {
         for (let scopeBubbleVariable of identifiedVariables) {
           if (isAncestorScope(scope, scopeBubbleVariable.scope)) {
             scopeBubbleVariable.color =
-              scope.type != 'for'
+              scope.type != 'for' && scope.type != 'with'
                 ? scopes.scopesColors[index]
                 : scopes.scopesColors[index + 1];
           }
@@ -570,8 +582,16 @@ var app = (function App() {
     var maxVisibleX = minVisibleX + minVisibleWidth;
 
     // GLOBAL BUBBLE.
-    var { x, y, width, height } = lines[0].getBoundingClientRect();
-    drawBubble({ x, y, width, height: height }, color, true);
+    // var { x, y, width, height } = lines[0].getBoundingClientRect();
+    drawBubble(
+      {
+        x: minVisibleX,
+        y: minVisibleY,
+        width: minVisibleWidth,
+        height: minVisibleHeight,
+      },
+      color,
+    );
 
     // SCOPE BUBBLES.
     for (let { lines: bubbleLines, color } of bubbles) {
@@ -611,14 +631,13 @@ var app = (function App() {
         {
           x: bubbleX,
           y: bubbleY,
-          width: bubbleX == lineX ? lineWidth - tabsWidth - 6 : width,
+          width: bubbleX == lineX ? lineWidth - tabsWidth - 6 : minVisibleWidth,
           height: Math.min(
             lineHeight * (visibleLines.length - 1) + newLineHeight,
             maxVisibleY,
           ),
         },
         color,
-        false,
       );
     }
 
@@ -665,7 +684,6 @@ var app = (function App() {
           height: tokenHeight,
         },
         color,
-        false,
       );
     }
   }
@@ -734,12 +752,9 @@ var app = (function App() {
       height: bubbleHeight = 0,
     } = squareFallback,
     color = code.scopes.scopesColors[0],
-    isGlobal = false,
   ) {
     var bubble = document.createElement('div');
-    bubble.classList.add(
-      isGlobal ? 'scopes__bubble--global' : 'scopes__bubble',
-    );
+    bubble.classList.add('scopes__bubble');
     bubble.style = `
                     background-color: ${color};
                     width: ${bubbleWidth}px;

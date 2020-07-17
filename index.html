@@ -80,11 +80,11 @@
       <script src="./src/app/main.js"
               defer></script>
       <script>
-            if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.register('/service-worker.js', {
-                        scope: './'
-                  });
-            }
+            // if ('serviceWorker' in navigator) {
+            //       navigator.serviceWorker.register('/service-worker.js', {
+            //             scope: './'
+            //       });
+            // }
       </script>
       <link rel="manifest"
             href="./manifest.json">
@@ -140,12 +140,11 @@
                 name="code-editor"
                 aria-label="Code editor"></textarea>
       <main class="custom-code-editor">
-            <div class="custom-code-editor__lines"></div>
-            <div id="scopes"
-                 class="scopes">
-            </div>
             <div id="code-displayer"
                  class="custom-code-editor__editor">
+            </div>
+            <div id="scopes"
+                 class="scopes">
             </div>
       </main>
 </body>

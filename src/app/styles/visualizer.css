@@ -5,15 +5,21 @@
   height: 100vh;
   width: 100%;
   display: grid;
-  grid-template-areas: 'lines code';
-  grid-template-columns: 29px auto;
+  grid-template-areas: 'code';
+  grid-template-columns: auto;
   background-color: var(--light-color);
+  font-family: monospace;
 }
 
-.custom-code-editor__lines {
-  grid-area: lines;
-  width: 29px;
-  height: 100%;
+.line-count {
+  width: 31px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: absolute;
+  padding: 6px 8px;
+  margin-left: -31px;
+  color: #4e4e4e;
 }
 
 .custom-code-editor__editor {
@@ -21,15 +27,16 @@
   height: 100%;
   width: 100%;
   padding-top: 4px;
-  font-family: monospace;
   color: var(--font-color-code-dark);
   overflow: auto;
   z-index: 1;
 }
 
 .line {
+  position: relative;
   padding: 6px 4px;
   white-space: nowrap;
+  margin-left: 31px;
 }
 
 .tab {
@@ -61,7 +68,9 @@
 }
 
 .scopes__bubble--global {
+  width: 100%;
   height: 100% !important;
+  position: fixed;
   border-radius: 4px;
   padding: 4px 0px;
 }
