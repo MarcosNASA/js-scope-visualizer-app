@@ -35,14 +35,39 @@ var app = (function App() {
      *
      */
     function setEventListeners() {
-      var handleInputDebounced = debounce(handleInput, 6000, false);
-      codeEditor.on('change', handleInputDebounced);
+      codeEditor.on('change', handleInput);
       // var redrawDebounced = debounce(reDraw, 60);
       codeDisplayer.addEventListener('scroll', reDraw, {
         passive: true,
       });
       window.addEventListener('scroll', reDraw, { passive: true });
       window.addEventListener('resize', reDraw, { passive: true });
+
+      /**
+       *
+       */
+      async function handleInput(event) {
+        try {
+          code = processCode(code, event.getValue());
+
+          if (!code.valid) {
+            await clearBubbles();
+            return;
+          }
+        } catch (e) {
+          await clearCode();
+          await clearBubbles();
+          displayError(e);
+          return;
+        }
+
+        await writeCode(code.value);
+
+        styleCodeEditor();
+
+        code = setBubbles(code);
+        updateCodeDisplayer(code);
+      }
 
       /**
        *
@@ -98,32 +123,6 @@ var app = (function App() {
     codeMirror.setOption('theme', 'ayu-mirage');
 
     return codeMirror;
-  }
-
-  /**
-   *
-   */
-  async function handleInput(event) {
-    try {
-      code = processCode(code, event.getValue());
-
-      if (!code.valid) {
-        await clearBubbles();
-        return;
-      }
-    } catch (e) {
-      await clearCode();
-      await clearBubbles();
-      displayError(e);
-      return;
-    }
-
-    await writeCode(code.value);
-
-    styleCodeEditor();
-
-    code = setBubbles(code);
-    updateCodeDisplayer(code);
   }
 
   /**
