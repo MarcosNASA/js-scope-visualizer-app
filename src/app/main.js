@@ -317,7 +317,9 @@ var app = (function App() {
    *
    */
   function styleCodeEditor() {
-    limitBubbleArea();
+    requestAnimationFrame(() => {
+      limitBubbleArea();
+    });
 
     function limitBubbleArea() {
       var verticalScrollbar =
@@ -595,6 +597,10 @@ var app = (function App() {
 
     // SCOPE BUBBLES.
     for (let { lines: bubbleLines, color } of bubbles) {
+      if (!bubbleLines[0]) {
+        continue;
+      }
+
       let {
         y: lineY,
         width: lineWidth,
@@ -607,7 +613,7 @@ var app = (function App() {
         { minVisibleY, maxVisibleY },
       );
 
-      if (visibleLines.length == 0) {
+      if (!(visibleLines.length > 0)) {
         continue;
       }
 
@@ -664,7 +670,8 @@ var app = (function App() {
           variableWidth = minVisibleWidth;
         } else {
           // The bubble overlaps the right.
-          variableWidth = tokenWidth - (tokenX + tokenWidth - maxVisibleX);
+          variableWidth =
+            tokenWidth - (tokenX + tokenWidth - maxVisibleX) - 100;
         }
       } else {
         if (variableX == minVisibleX) {
@@ -701,42 +708,42 @@ var app = (function App() {
     while (lineY + lineHeight < minVisibleY && visibleLines.length > 0) {
       visibleLines.shift();
 
-      if (!visibleLines.length > 0) {
+      if (!(visibleLines.length > 0)) {
         break;
       }
 
       ({ y: lineY } = visibleLines[0].getBoundingClientRect());
     }
 
-    if (!visibleLines.length > 0) {
+    if (!(visibleLines.length > 0)) {
       return { visibleLines: [], newLineHeight: 0 };
     }
 
-    // if (
-    //   lineY < minVisibleY ||
-    //   lineY + lineHeight > minVisibleY + minVisibleHeight
-    // ) {
-    //   continue;
-    // }
-
     while (
-      lineY + lineHeight * visibleLines.length > maxVisibleY &&
+      lineY + lineHeight * (visibleLines.length - 1) > maxVisibleY &&
       visibleLines.length > 0
     ) {
       visibleLines.pop();
 
-      if (!visibleLines.length > 0) {
+      if (!(visibleLines.length > 0)) {
         break;
       }
 
       ({ height: newLineHeight } = visibleLines[0].getBoundingClientRect());
     }
 
-    if (!visibleLines.length > 0) {
+    if (!(visibleLines.length > 0)) {
       return { visibleLines: [], newLineHeight: 0 };
     }
 
-    var newLineHeight = lineHeight;
+    var { y: lastLineY, height: lastLineHeight } = visibleLines[
+      visibleLines.length - 1
+    ].getBoundingClientRect();
+
+    var newLineHeight =
+      lastLineY + lastLineHeight > maxVisibleY
+        ? maxVisibleY - lastLineY
+        : lineHeight;
 
     return { visibleLines, newLineHeight };
   }
