@@ -280,7 +280,6 @@ var app = (function App() {
       let lineCount = document.createElement('div');
       lineCount.classList.add('line-count');
       lineCount.textContent = index + 1;
-      lineCount.style.top = `0px`;
       line.appendChild(lineCount);
 
       {
@@ -637,7 +636,8 @@ var app = (function App() {
         {
           x: bubbleX,
           y: bubbleY,
-          width: bubbleX == lineX ? lineWidth - tabsWidth - 6 : minVisibleWidth,
+          width:
+            (bubbleX == lineX ? lineWidth - tabsWidth : minVisibleWidth) - 6,
           height: Math.min(
             lineHeight * (visibleLines.length - 1) + newLineHeight,
             maxVisibleY,
@@ -662,16 +662,15 @@ var app = (function App() {
 
       let variableX = Math.max(tokenX, minVisibleX);
       let variableY = Math.max(tokenY, minVisibleY);
-      let variableWidth;
+      let variableWidth = 0;
 
       if (variableX + tokenWidth > maxVisibleX) {
         if (variableX == minVisibleX) {
           // The bubble overlaps both sides.
-          variableWidth = minVisibleWidth;
+          variableWidth = minVisibleWidth - 6;
         } else {
           // The bubble overlaps the right.
-          variableWidth =
-            tokenWidth - (tokenX + tokenWidth - maxVisibleX) - 100;
+          variableWidth = tokenWidth - (tokenX + tokenWidth - maxVisibleX) - 6;
         }
       } else {
         if (variableX == minVisibleX) {
