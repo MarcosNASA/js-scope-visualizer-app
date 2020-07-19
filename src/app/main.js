@@ -53,6 +53,7 @@ var app = (function App() {
             return;
           }
         } catch (e) {
+          code.valid = false;
           await clearCode();
           await clearBubbles();
           displaySnackBar(e);
