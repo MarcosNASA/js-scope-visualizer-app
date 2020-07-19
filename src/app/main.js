@@ -39,6 +39,7 @@ var app = (function App() {
     function setEventListeners() {
       var handleInputDebounced = debounce(handleInput, 500, false);
       codeEditor.on('change', handleInputDebounced);
+      codeDisplayer.addEventListener('scroll', reDraw, { passive: true });
       window.addEventListener('resize', reDraw, { passive: true });
 
       /**
@@ -64,8 +65,6 @@ var app = (function App() {
 
         await writeCode(code.value);
 
-        styleCodeEditor();
-
         code = setBubbles(code);
         updateCodeDisplayer(code);
       }
@@ -74,7 +73,6 @@ var app = (function App() {
        *
        */
       function reDraw() {
-        styleCodeEditor();
         updateCodeDisplayer(code);
       }
 
@@ -312,35 +310,6 @@ var app = (function App() {
       line.classList.add('line');
       codeDisplayer.appendChild(line);
     });
-  }
-
-  /**
-   *
-   */
-  function styleCodeEditor() {
-    requestAnimationFrame(() => {
-      limitBubbleArea();
-    });
-
-    function limitBubbleArea() {
-      var verticalScrollbar =
-        codeDisplayer.scrollHeight > codeDisplayer.clientHeight;
-
-      if (verticalScrollbar) {
-        scopeBubbles.classList.add('scopes--vertical-scrollbar');
-      } else {
-        scopeBubbles.classList.remove('scopes--vertical-scrollbar');
-      }
-
-      var horizontalScrollbar =
-        codeDisplayer.scrollWidth > codeDisplayer.clientWidth;
-
-      if (horizontalScrollbar) {
-        scopeBubbles.classList.add('scopes--horizontal-scrollbar');
-      } else {
-        scopeBubbles.classList.remove('scopes--horizontal-scrollbar');
-      }
-    }
   }
 
   /**

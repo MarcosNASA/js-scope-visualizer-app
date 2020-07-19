@@ -7,18 +7,14 @@
     grid-template-rows: 100px auto auto;
     grid-template-columns: 1fr;
   }
+
+  .custom-code-editor__editor {
+    overflow-x: auto;
+  }
 }
 
 @media screen and (max-width: 600px) {
   :root {
     font-size: 9px;
-  }
-
-  .scopes--vertical-scrollbar {
-    width: 100%;
-  }
-
-  .scopes--horizontal-scrollbar {
-    height: 100%;
   }
 }

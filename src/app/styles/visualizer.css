@@ -53,14 +53,6 @@
   overflow: hidden;
 }
 
-.scopes--vertical-scrollbar {
-  width: calc(100% - 16px);
-}
-
-.scopes--horizontal-scrollbar {
-  height: calc(100% - 16px);
-}
-
 .scopes__bubble {
   position: absolute;
   border-radius: 4px;
