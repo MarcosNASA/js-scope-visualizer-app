@@ -13,11 +13,11 @@ var app = (function App() {
     bubbles: [],
     valid: true,
   };
-  var errorsList;
   var code;
   var codeEditor;
   var codeDisplayer;
   var scopeBubbles;
+  var snackBar;
 
   return { bootstrap };
 
@@ -29,7 +29,7 @@ var app = (function App() {
     codeEditor = setupCodeEditor(document.getElementById('code-editor'));
     codeDisplayer = document.getElementById('code-displayer');
     scopeBubbles = document.getElementById('scopes');
-    errorsList = new Set();
+    snackBar = document.getElementById('snackbar');
 
     setEventListeners();
 
@@ -55,9 +55,11 @@ var app = (function App() {
         } catch (e) {
           await clearCode();
           await clearBubbles();
-          displayError(e);
+          displaySnackBar(e);
           return;
         }
+
+        hideSnackBar();
 
         await writeCode(code.value);
 
@@ -140,6 +142,7 @@ var app = (function App() {
       });
       processedCode.valid = true;
     } catch (e) {
+      displaySnackBar(Object.assign({}, e));
       processedCode.value = e.toString();
       processedCode.valid = false;
       return processedCode;
@@ -752,10 +755,112 @@ var app = (function App() {
   /**
    *
    */
-  function displayError(e) {
-    console.log(e);
-    // TO-DO
-    errorsList.add(e);
+  function clearErrorElements() {
+    return new Promise((resolve) => {
+      while (snackBar.firstChild) {
+        snackBar.removeChild(snackBar.lastChild);
+      }
+      resolve();
+    });
+  }
+
+  /**
+   *
+   */
+  function displaySnackBar(e) {
+    requestAnimationFrame(function displayErrors() {
+      if (snackBar.classList.contains('show')) {
+        appendErrors();
+      } else {
+        showSnackBar();
+      }
+    });
+
+    function showSnackBar() {
+      snackBar.classList.add('show');
+      var fadeIn = snackBar.animate(
+        [
+          {
+            opacity: '0',
+          },
+          {
+            opacity: '1',
+          },
+        ],
+        { duration: 400 },
+      );
+
+      fadeIn.onfinish = appendErrors;
+    }
+
+    async function appendErrors() {
+      await clearErrorElements();
+      animateError();
+
+      function animateError() {
+        var errorElement = genereteErrorElement(e);
+        snackBar.appendChild(errorElement);
+        errorElement.animate([{ opacity: '0' }, { opacity: '1' }], {
+          duration: 1000,
+        });
+      }
+    }
+
+    function genereteErrorElement(error) {
+      if (error.codeFrame) {
+        return generateSyntaxError(error);
+      }
+
+      return generateUnexpectedError(error);
+
+      function generateSyntaxError(error) {
+        var syntaxError = document.createElement('p');
+        syntaxError.classList.add('syntax-message');
+        syntaxError.textContent = `Syntax error at line ${error.loc.start.line}`;
+
+        var errorLines = error.codeFrame.split(/(\n)/);
+
+        for (let errorLine of errorLines) {
+          let errorLineElement = document.createElement('span');
+          errorLineElement.textContent = errorLine;
+          syntaxError.appendChild(errorLineElement);
+        }
+
+        return syntaxError;
+      }
+
+      function generateUnexpectedError(error) {
+        var unexpectedError = document.createElement('p');
+        unexpectedError.classList.add('unexpected-message');
+        unexpectedError.textContent = `Line: ${error.lineNumber} - ${error.description}`;
+        return unexpectedError;
+      }
+    }
+  }
+
+  function hideSnackBar() {
+    if (!snackBar.classList.contains('show')) {
+      return;
+    }
+
+    var fadeOut = snackBar.animate(
+      [
+        {
+          opacity: '1',
+        },
+        {
+          opacity: '0',
+        },
+      ],
+      { duration: 400 },
+    );
+
+    fadeOut.onfinish = removeShowClass;
+
+    async function removeShowClass() {
+      snackBar.classList.remove('show');
+      await clearErrorElements();
+    }
   }
 })();
 
