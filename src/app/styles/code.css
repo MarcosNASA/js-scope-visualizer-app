@@ -111,10 +111,26 @@
 }
 
 .CodeMirror {
-  height: calc(100vh - 100px);
+  min-height: calc(100vh - 100px);
+  height: 100%;
 }
 
 .code-editor__editor {
   grid-area: code;
+  display: none;
+}
+
+.errors {
+  background-color: var(--error-color);
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: calc(100% - 40px);
+  margin: 20px auto;
+  padding: 20px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  border-radius: 2px;
   display: none;
 }

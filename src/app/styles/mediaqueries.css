@@ -4,7 +4,7 @@
       'header'
       'code'
       'visualizer';
-    grid-template-rows: 80px auto auto;
+    grid-template-rows: 100px auto auto;
     grid-template-columns: 1fr;
   }
 }

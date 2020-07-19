@@ -43,14 +43,14 @@ a:focus {
 }
 
 .app {
-  height: 100vh;
+  min-height: 100%;
   display: grid;
   grid-template-areas:
     'header visualizer'
     'code visualizer';
   grid-template-rows: 100px auto;
-  grid-template-columns: 50vw 50vw;
-  background-color: #ffffff;
+  grid-template-columns: 50vw 1fr;
+  background-color: var(--main-color);
   font-size: 1.6rem;
 }
 
@@ -113,3 +113,4 @@ a:focus {
 .nav-bar__link:hover {
   background-color: var(--main-color--shade);
 }
+

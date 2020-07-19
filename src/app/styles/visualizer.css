@@ -2,7 +2,7 @@
 
 .custom-code-editor {
   grid-area: visualizer;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   display: grid;
   grid-template-areas: 'code';
@@ -26,11 +26,10 @@
 .custom-code-editor__editor {
   grid-area: code;
   height: 100%;
-  /* width: 100%; */
   padding-top: 4px;
   margin-right: 6px;
   color: var(--font-color-code-dark);
-  overflow: auto;
+  overflow: visible;
   z-index: 1;
 }
 
@@ -52,7 +51,6 @@
   width: 100%;
   opacity: 1;
   overflow: hidden;
-  pointer-events: none;
 }
 
 .scopes--vertical-scrollbar {
@@ -64,7 +62,7 @@
 }
 
 .scopes__bubble {
-  position: fixed;
+  position: absolute;
   border-radius: 4px;
   padding: 4px 0px;
 }
@@ -72,11 +70,7 @@
 .scopes__bubble--global {
   width: 100%;
   height: 100% !important;
-  position: fixed;
+  position: absolute;
   border-radius: 4px;
   padding: 4px 0px;
-}
-
-.scopes__bubble:hover {
-  border: 3px solid var(--dark-color);
 }

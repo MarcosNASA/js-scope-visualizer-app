@@ -13,6 +13,7 @@ var app = (function App() {
     bubbles: [],
     valid: true,
   };
+  var errorsList;
   var code;
   var codeEditor;
   var codeDisplayer;
@@ -28,6 +29,7 @@ var app = (function App() {
     codeEditor = setupCodeEditor(document.getElementById('code-editor'));
     codeDisplayer = document.getElementById('code-displayer');
     scopeBubbles = document.getElementById('scopes');
+    errorsList = new Set();
 
     setEventListeners();
 
@@ -35,12 +37,8 @@ var app = (function App() {
      *
      */
     function setEventListeners() {
-      codeEditor.on('change', handleInput);
-      // var redrawDebounced = debounce(reDraw, 60);
-      codeDisplayer.addEventListener('scroll', reDraw, {
-        passive: true,
-      });
-      window.addEventListener('scroll', reDraw, { passive: true });
+      var handleInputDebounced = debounce(handleInput, 500, false);
+      codeEditor.on('change', handleInputDebounced);
       window.addEventListener('resize', reDraw, { passive: true });
 
       /**
@@ -113,6 +111,8 @@ var app = (function App() {
       value: ``,
       lineNumbers: true,
       lineWrapping: false,
+      fixedGutter: false,
+      coverGutterNextToScrollbar: true,
       matchBrackets: true,
       autofocus: true,
       readOnly: false,
@@ -138,10 +138,6 @@ var app = (function App() {
         plugins: prettierPlugins,
         useTabs: true,
       });
-      // .replace(
-      //   /(?<tabs>\t*)(?<other>.*)(?<pre>function *.*\()(?<args>.+)(?<post>\))/g,
-      //   '$<tabs>$<other>$<pre>\n$<tabs>\t$<args>\n$<tabs>$<post>',
-      // );
       processedCode.valid = true;
     } catch (e) {
       processedCode.value = e.toString();
@@ -262,8 +258,8 @@ var app = (function App() {
    */
   function writeCode(code) {
     return new Promise((resolve) => {
-      requestAnimationFrame(() => {
-        write(code);
+      requestAnimationFrame(async () => {
+        await write(code);
         resolve();
       });
     });
@@ -272,8 +268,8 @@ var app = (function App() {
   /**
    *
    */
-  function write(code) {
-    codeDisplayer.innerHTML = '';
+  async function write(code) {
+    await clearCode();
 
     var codeLines = code.split('\n');
     codeLines.forEach(function customLineWriting(codeLine, index) {
@@ -575,6 +571,9 @@ var app = (function App() {
       return;
     }
 
+    var xOffset = document.documentElement.scrollLeft;
+    var yOffset = document.documentElement.scrollTop;
+
     var {
       x: minVisibleX,
       y: minVisibleY,
@@ -585,7 +584,6 @@ var app = (function App() {
     var maxVisibleX = minVisibleX + minVisibleWidth;
 
     // GLOBAL BUBBLE.
-    // var { x, y, width, height } = lines[0].getBoundingClientRect();
     drawBubble(
       {
         x: minVisibleX,
@@ -594,6 +592,8 @@ var app = (function App() {
         height: minVisibleHeight,
       },
       color,
+      xOffset,
+      yOffset,
     );
 
     // SCOPE BUBBLES.
@@ -607,23 +607,13 @@ var app = (function App() {
         height: lineHeight,
       } = bubbleLines[0].getBoundingClientRect();
 
-      let { visibleLines, newLineHeight } = getVisibleLines(
-        Object.freeze(bubbleLines),
-        { lineY, lineHeight },
-        { minVisibleY, maxVisibleY },
-      );
-
-      if (!(visibleLines.length > 0)) {
-        continue;
-      }
-
       let lastTokens = [];
-      for (let visibleLine of visibleLines) {
-        if (!(visibleLine.children.length > 0)) {
+      for (let bubbleLine of bubbleLines) {
+        if (!(bubbleLine.children.length > 0)) {
           continue;
         }
 
-        lastTokens.push(visibleLine.children[visibleLine.children.length - 1]);
+        lastTokens.push(bubbleLine.children[bubbleLine.children.length - 1]);
       }
 
       let bubbleEnd =
@@ -646,12 +636,11 @@ var app = (function App() {
           x: bubbleX,
           y: bubbleY,
           width: Math.min(bubbleEnd - bubbleX + 8.8, maxVisibleX - bubbleX - 6), // maxVisibleX - bubbleX - 6)
-          height: Math.min(
-            lineHeight * (visibleLines.length - 1) + newLineHeight,
-            maxVisibleY,
-          ),
+          height: Math.min(lineHeight * bubbleLines.length, maxVisibleY),
         },
         color,
+        xOffset,
+        yOffset,
       );
     }
 
@@ -699,61 +688,10 @@ var app = (function App() {
           height: tokenHeight,
         },
         color,
+        xOffset,
+        yOffset,
       );
     }
-  }
-
-  /**
-   *
-   */
-  function getVisibleLines(
-    lines,
-    { lineY, lineHeight } = {},
-    { minVisibleY, maxVisibleY } = {},
-  ) {
-    var visibleLines = [...lines];
-
-    while (lineY + lineHeight < minVisibleY && visibleLines.length > 0) {
-      visibleLines.shift();
-
-      if (!(visibleLines.length > 0)) {
-        break;
-      }
-
-      ({ y: lineY } = visibleLines[0].getBoundingClientRect());
-    }
-
-    if (!(visibleLines.length > 0)) {
-      return { visibleLines: [], newLineHeight: 0 };
-    }
-
-    while (
-      lineY + lineHeight * (visibleLines.length - 1) > maxVisibleY &&
-      visibleLines.length > 0
-    ) {
-      visibleLines.pop();
-
-      if (!(visibleLines.length > 0)) {
-        break;
-      }
-
-      ({ height: newLineHeight } = visibleLines[0].getBoundingClientRect());
-    }
-
-    if (!(visibleLines.length > 0)) {
-      return { visibleLines: [], newLineHeight: 0 };
-    }
-
-    var { y: lastLineY, height: lastLineHeight } = visibleLines[
-      visibleLines.length - 1
-    ].getBoundingClientRect();
-
-    var newLineHeight =
-      lastLineY + lastLineHeight > maxVisibleY
-        ? maxVisibleY - lastLineY
-        : lineHeight;
-
-    return { visibleLines, newLineHeight };
   }
 
   /**
@@ -767,6 +705,8 @@ var app = (function App() {
       height: bubbleHeight = 0,
     } = squareFallback,
     color = code.scopes.scopesColors[0],
+    xOffset = 0,
+    yOffset = 0,
   ) {
     var bubble = document.createElement('div');
     bubble.classList.add('scopes__bubble');
@@ -774,8 +714,8 @@ var app = (function App() {
                     background-color: ${color};
                     width: ${bubbleWidth}px;
                     height: ${bubbleHeight}px;
-                    top: ${bubbleY}px;
-                    left: ${bubbleX}px;
+                    top: ${bubbleY + yOffset}px;
+                    left: ${bubbleX + xOffset}px;
                     `;
 
     scopeBubbles.appendChild(bubble);
@@ -787,7 +727,9 @@ var app = (function App() {
   function clearBubbles() {
     return new Promise((resolve) => {
       requestAnimationFrame(() => {
-        scopeBubbles.innerHTML = '';
+        while (scopeBubbles.firstChild) {
+          scopeBubbles.removeChild(scopeBubbles.lastChild);
+        }
         resolve();
       });
     });
@@ -799,7 +741,9 @@ var app = (function App() {
   function clearCode() {
     return new Promise((resolve) => {
       requestAnimationFrame(() => {
-        codeDisplayer.innerHTML = '';
+        while (codeDisplayer.firstChild) {
+          codeDisplayer.removeChild(codeDisplayer.lastChild);
+        }
         resolve();
       });
     });
@@ -811,6 +755,7 @@ var app = (function App() {
   function displayError(e) {
     console.log(e);
     // TO-DO
+    errorsList.add(e);
   }
 })();
 
