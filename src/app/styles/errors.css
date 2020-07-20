@@ -1,8 +1,0 @@
-.errors {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: flex-start;
-    width: 80%;
-    background-color: var(--error-color);
-}

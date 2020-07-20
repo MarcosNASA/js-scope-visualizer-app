@@ -1,0 +1,66 @@
+.scope-theory {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--light-color);
+  padding: var(--padding-md);
+}
+
+.scope-theory__title {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  padding: var(--padding-md);
+  line-height: var(--line-height-sm);
+}
+
+.scope-theory__sub-title {
+  padding: var(--padding-xs) 0px;
+  line-height: var(--line-height-md);
+}
+
+.scope-theory__theory {
+  line-height: var(--line-height-lg);
+  padding: var(--padding-xs) 0;
+}
+
+.scope-theory__github-link {
+  padding: var(--padding-sm);
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+}
+
+.scope-theory__icon {
+  height: 24px;
+  width: 24px;
+  margin: var(--padding-sm);
+}
+
+.scope-theory__ydkjs {
+  margin: var(--padding-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.scope-theory__ydkjs img {
+  margin-bottom: var(--padding-md);
+}
+
+.scope-theory__button {
+  text-decoration: none;
+  margin: var(--padding-sm);
+  padding: var(--padding-sm) var(--padding-md);
+  color: var(--font-color);
+  background-color: var(--accent-color);
+  border-radius: 40px;
+}
+
+.flexbox {
+  display: flex;
+  justify-content: center;
+}

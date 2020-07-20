@@ -2,6 +2,7 @@
   font-family: 'Roboto', sans-serif;
   font-size: 10px;
 
+  --padding-xs: 4px;
   --padding-sm: 10px;
   --padding-md: 20px;
   --padding-lg: 40px;
@@ -108,9 +109,34 @@ a:focus {
   color: var(--font-color);
   font-size: 1.4rem;
   transition: 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.nav-bar__link * {
+  pointer-events: none;
 }
 
 .nav-bar__link:hover {
   background-color: var(--main-color--shade);
 }
 
+.page {
+  grid-area: visualizer;
+}
+
+.page:not(.active) {
+  display: none;
+}
+
+.active {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
