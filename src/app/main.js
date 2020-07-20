@@ -113,7 +113,6 @@ var app = (function App() {
       lineNumbers: true,
       lineWrapping: false,
       fixedGutter: false,
-      coverGutterNextToScrollbar: true,
       matchBrackets: true,
       autofocus: true,
       readOnly: false,
