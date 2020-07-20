@@ -11,6 +11,7 @@
   align-self: center;
   padding: var(--padding-md);
   line-height: var(--line-height-sm);
+  font-size: 4rem;
 }
 
 .scope-theory__sub-title {
