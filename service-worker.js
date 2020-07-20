@@ -1,24 +1,25 @@
-const cacheName = 'jsScopeVisualizer';
+const CACHE_NAME = 'jsScopeVisualizer';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(cacheName).then((cache) => {
+    caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll([
-        './',
         './index.html',
+        './404.html',
+        './lib/codemirror.css',
         './src/app/styles.css',
         './src/app/styles/code.css',
         './src/app/styles/visualizer.css',
+        './src/app/styles/scope-theory.css',
         './src/app/styles/mediaqueries.css',
-        './src/app/main.js',
+        './lib/keywords.js',
+        './lib/prettier.js',
+        './lib/parser-babel.js',
+        './lib/esprima.js',
         './lib/lib.js',
         './lib/codemirror.js',
-        './lib/esprima.js',
         './lib/javascript.js',
-        './lib/parser-babel.js',
-        './lib/prettier.js',
-        './lib/keywords.js',
-        './lib/codemirror.css',
+        './src/app/main.js',
         './assets/icons/favicon.ico',
         './assets/icons/icon-64.png',
         './assets/icons/icon-96.png',
@@ -33,33 +34,51 @@ self.addEventListener('install', (e) => {
   );
 });
 
-var networkDataReceived = false;
+// Cache and update with stale-while-revalidate policy.
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
 
-// fetch fresh data
-var networkUpdate = fetch('/data.json')
-  .then(function getResponse(response) {
-    return response.json();
-  })
-  .then(function getData(data) {
-    networkDataReceived = true;
-    updatePage(data);
-  });
+  if (request.cache === 'only-if-cached' && request.mode !== 'same-origin') {
+    return;
+  }
 
-// fetch cached data
-caches
-  .match('/data.json')
-  .then(function getResponse(response) {
-    if (!response) throw Error('No data');
-    return response.json();
-  })
-  .then(function getData(data) {
-    // don't overwrite newer network data
-    if (!networkDataReceived) {
-      updatePage(data);
-    }
-  })
-  .catch(function networkRequest() {
-    // we didn't get cached data, the network is our last hope:
-    return networkUpdate;
-  })
-  .catch(console.log);
+  event.respondWith(
+    (async function staleWhileRevalidate() {
+      const cache = await caches.open(CACHE_NAME);
+
+      const cachedResponsePromise = await cache.match(request);
+      const networkResponsePromise = fetch(request);
+
+      if (request.url.startsWith(self.location.origin)) {
+        event.waitUntil(
+          (async function fetchNetwork() {
+            const networkResponse = await networkResponsePromise;
+
+            await cache.put(request, networkResponse.clone());
+          })(),
+        );
+      }
+
+      return cachedResponsePromise || networkResponsePromise;
+    })(),
+  );
+});
+
+// Clean up caches other than current.
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async function cleanCache() {
+      const cacheNames = await caches.keys();
+
+      await Promise.all(
+        cacheNames
+          .filter((cacheName) => {
+            const deleteThisCache = cacheName !== CACHE_NAME;
+
+            return deleteThisCache;
+          })
+          .map((cacheName) => caches.delete(cacheName)),
+      );
+    })(),
+  );
+});

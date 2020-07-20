@@ -1,7 +1,7 @@
 /* eslint-disable guard-for-in */
 'use strict';
 
-var app = (function App() {
+(function App() {
   const squareFallback = { x: 0, y: 0, width: 0, height: 0 };
   const defaultCode = {
     value: '',
@@ -19,86 +19,132 @@ var app = (function App() {
   var scopeBubbles;
   var snackBar;
 
-  return { bootstrap };
+  bootstrap();
 
   /**
    * Initialize the app.
    */
   function bootstrap() {
-    code = { ...defaultCode };
-    codeEditor = setupCodeEditor(document.getElementById('code-editor'));
-    codeDisplayer = document.getElementById('code-displayer');
-    scopeBubbles = document.getElementById('scopes');
-    snackBar = document.getElementById('snackbar');
-
-    setEventListeners();
+    initializeScopeVisualizer();
+    initializeSPA();
 
     /**
      *
      */
-    function setEventListeners() {
-      var handleInputDebounced = debounce(handleInput, 500, false);
-      codeEditor.on('change', handleInputDebounced);
-      codeDisplayer.addEventListener('scroll', reDraw, { passive: true });
-      window.addEventListener('resize', reDraw, { passive: true });
+    function initializeScopeVisualizer() {
+      code = { ...defaultCode };
+      codeEditor = setupCodeEditor(document.getElementById('code-editor'));
+      codeDisplayer = document.getElementById('code-displayer');
+      scopeBubbles = document.getElementById('scopes');
+      snackBar = document.getElementById('snackbar');
+
+      setEventListeners();
 
       /**
        *
        */
-      async function handleInput(event) {
-        try {
-          code = processCode(code, event.getValue());
+      function setEventListeners() {
+        var handleInputDebounced = debounce(handleInput, 500, false);
+        codeEditor.on('change', handleInputDebounced);
+        codeDisplayer.addEventListener('scroll', reDraw, { passive: true });
+        window.addEventListener('resize', reDraw, { passive: true });
 
-          if (!code.valid) {
+        /**
+         *
+         */
+        async function handleInput(event) {
+          try {
+            code = processCode(code, event.getValue());
+
+            if (!code.valid) {
+              await clearBubbles();
+              return;
+            }
+          } catch (e) {
+            code.valid = false;
+            await clearCode();
             await clearBubbles();
+            displaySnackBar(e);
             return;
           }
-        } catch (e) {
-          code.valid = false;
-          await clearCode();
-          await clearBubbles();
-          displaySnackBar(e);
-          return;
+
+          hideSnackBar();
+
+          await writeCode(code.value);
+
+          code = setBubbles(code);
+          updateCodeDisplayer(code);
         }
 
-        hideSnackBar();
+        /**
+         *
+         */
+        function reDraw() {
+          updateCodeDisplayer(code);
+        }
 
-        await writeCode(code.value);
-
-        code = setBubbles(code);
-        updateCodeDisplayer(code);
-      }
-
-      /**
-       *
-       */
-      function reDraw() {
-        updateCodeDisplayer(code);
-      }
-
-      /**
-       *
-       * @param {*} func
-       * @param {*} wait
-       * @param {*} immediate
-       */
-      function debounce(func, wait, immediate) {
-        var debounce;
-        return function debounced(...args) {
-          var context = this;
-          var later = function later() {
-            debounce = null;
-            if (!immediate) {
+        /**
+         *
+         * @param {*} func
+         * @param {*} wait
+         * @param {*} immediate
+         */
+        function debounce(func, wait, immediate) {
+          var debounce;
+          return function debounced(...args) {
+            var context = this;
+            var later = function later() {
+              debounce = null;
+              if (!immediate) {
+                func.apply(context, args);
+              }
+            };
+            var callNow = immediate && !debounce;
+            clearTimeout(debounce);
+            debounce = setTimeout(later, wait);
+            if (callNow) {
               func.apply(context, args);
             }
           };
-          var callNow = immediate && !debounce;
-          clearTimeout(debounce);
-          debounce = setTimeout(later, wait);
-          if (callNow) {
-            func.apply(context, args);
-          }
-        };
+        }
+      }
+    }
+
+    function initializeSPA() {
+      document
+        .querySelectorAll('.spa-link')
+        .forEach(function setLinkEventListener(link) {
+          link.addEventListener('click', navigate);
+        });
+
+      history.replaceState({}, 'Visualizer', '#visualizer');
+
+      window.addEventListener('popstate', navigateBack);
+
+      /**
+       * Navigates to a new page.
+       * @param {object} event Event details for the event triggered
+       * by clicking a navigation link.
+       */
+      function navigate(event) {
+        event.preventDefault();
+        var newPageId = event.target.dataset.target;
+        document.querySelector('.active').classList.remove('active');
+        var newPage = document.getElementById(newPageId);
+        newPage.classList.add('active');
+        history.pushState({}, newPageId, `#${newPageId}`);
+      }
+
+      /**
+       * Navigates the history, allowing the user to navigate back.
+       * @param {object} event Event details for the event triggered
+       * when the active history entry changes.
+       */
+      function navigateBack(event) {
+        var newPageId = location.hash.replace('#', '');
+        document.querySelector('.active').classList.remove('active');
+        var newPage = document.getElementById(newPageId);
+        newPage.classList.add('active');
       }
     }
   }
@@ -833,5 +879,3 @@ var app = (function App() {
     }
   }
 })();
-
-app.bootstrap();

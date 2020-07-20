@@ -51,6 +51,10 @@
             rel="preload"
             as="style"
             onload="this.onload=null;this.rel='stylesheet'">
+      <link href="./src/app/styles/scope-theory.css"
+            rel="preload"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'">
       <link href="./src/app/styles/mediaqueries.css"
             rel="stylesheet">
       <noscript>
@@ -61,6 +65,8 @@
             <link href="./src/app/styles/code.css"
                   rel="stylesheet">
             <link href="./src/app/styles/visualizer.css"
+                  rel="stylesheet">
+            <link href="./src/app/styles/scope-theory.css"
                   rel="stylesheet">
       </noscript>
       <script src="lib/keywords.js"
@@ -97,8 +103,8 @@
             <nav class="nav-bar">
                   <ul class="nav-bar__list">
                         <li class="nav-bar__item">
-                              <a class="nav-bar__link"
-                                 href="#"
+                              <a class="nav-bar__link spa-link"
+                                 data-target="visualizer"
                                  tabindex="0">
                                     <svg xmlns="https://www.w3.org/2000/svg"
                                          class="nav-bar__icon"
@@ -114,8 +120,8 @@
                               </a>
                         </li>
                         <li class="nav-bar__item">
-                              <a class="nav-bar__link"
-                                 href="#"
+                              <a class="nav-bar__link spa-link"
+                                 data-target="scope-theory"
                                  tabindex="0">
                                     <svg xmlns="http://www.w3.org/2000/svg"
                                          enable-background="new 0 0 24 24"
@@ -139,7 +145,8 @@
                 class="code-editor__editor"
                 name="code-editor"
                 aria-label="Code editor"></textarea>
-      <main class="custom-code-editor">
+      <main id="visualizer"
+            class="custom-code-editor page active">
             <div id="scopes"
                  class="scopes">
             </div>
@@ -147,6 +154,138 @@
                  class="custom-code-editor__editor">
             </div>
       </main>
+      <article id="scope-theory"
+               class="scope-theory page">
+            <header>
+                  <h1 class="scope-theory__title">
+                        JS Scope Theory
+                  </h1>
+            </header>
+            <section class="scope-theory__content">
+                  <header>
+                        <h3 class="scope-theory__sub-title">
+                              What's the Scope?
+                        </h3>
+                  </header>
+                  <p class="scope-theory__theory">
+                        The scope can be seen as the set of rules that
+                        determines whether a variable is available or not in a specific execution context or region of
+                        the code.
+                  </p>
+                  <p class="scope-theory__theory">
+                        JS Scope is <i>lexically</i> determined.
+                        This means that the scopes are set before the code execution, during the compilation
+                        (<i>lexical</i> comes from the compilation <i>lexing</i> step where the code is split into
+                        tokens, the smallest meaningful chunk of information).
+                        The JS engine declares a scope for each block in the code; the variables declared in a
+                        particular scope will only be available inside that scope (including the nested ones).
+                  </p>
+                  <p class="scope-theory__theory">
+                        To understand JS scoping rules applied to variable availabiliy, we need to differenciate
+                        between function scoped variables and block scoped variables.
+                  </p>
+                  <p class="scope-theory__theory">
+                        Before ES2015, the only way to declare a variable in JS was via the <i>var</i> variable
+                        declaration.
+                        The <i>var</i> variable declaration declares a <i>function scoped variable</i>.
+                        Function scoped variables set the bounds for their availabiliy to the nearest enclosing
+                        function and, as we discussed previously, the nested ones.
+                  </p>
+                  <p class="scope-theory__theory">
+                        ES2015 introduced <i>let</i> and <i>const</i> variable declarations.
+                        Both <i>let</i> and <i>const</i> variable declarations declare <i>block scoped variables</i>.
+                        Block scoped variables set the bounds for their availabiliy to the nearest enclosing block
+                        (whether it is a function, a pair of brackets, an if statement, a for statement...), and, as we
+                        discussed previously, the nested ones.
+                  </p>
+            </section>
+            <section class="scope-theory__content">
+                  <header>
+                        <h3 class="scope-theory__sub-title">
+                              About this project
+                        </h3>
+                  </header>
+                  <p class="scope-theory__theory">
+                        JS Scope Visualizer is the first of the «3 pilars project» inspired by Kyle Simpson.
+                        <br>
+                        It allows the users to visualize JS Scope as bubbles.
+                  </p>
+                  <p class="scope-theory__theory">
+                        Authored by Marcos G NASA - 2020.
+                        </br>
+                        <div class="flexbox">
+                              <a class="scope-theory__github-link"
+                                 href="https://github.com/MarcosNASA"
+                                 target="_blank"
+                                 rel="noreferrer"
+                                 tabindex="0">
+                                    <svg class="scope-theory__icon"
+                                         viewBox="0 0 24 24"
+                                         xmlns="https://www.w3.org/2000/svg"
+                                         role="img"
+                                         fill="#2a313b">
+                                          <title>GitHub icon</title>
+                                          <path
+                                                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                                    </svg>
+                                    Check it in GitHub
+                              </a>
+                        </div>
+                  </p>
+            </section>
+            <section class="scope-theory__content">
+                  <header>
+                        <h3 class="scope-theory__sub-title">
+                              Want to learn more?
+                        </h3>
+                  </header>
+                  <p class="scope-theory__theory">
+                        <a href="https://github.com/getify/You-Dont-Know-JS"
+                           target="_blank"
+                           rel="noreferrer"
+                           tabindex="0">You Don't Know JS Yet</a>
+                        is a book series by Kyle Simpson
+                        (<a href="https://www.twitter.com/getify"
+                           target="_blank"
+                           rel="noreferrer"
+                           tabindex="0">@getify</a>)
+                        which dives deep into the core mechanisms of the JavaScript language.
+                  </p>
+                  <p class="scope-theory__theory">
+                        The second chapter of the series
+                        (<a href="https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/scope-closures/README.md"
+                           target="_blank"
+                           rel="noreferrer"
+                           tabindex="0">Scope & Closures</a>)
+                        takes a look into how the scoping rules behave in JS.
+                  </p>
+                  <div class="flexbox">
+                        <a class="scope-theory__button"
+                           href="https://t.co/PbFmTwxQ9e?amp=1"
+                           target="_blank"
+                           rel="noreferrer"
+                           tabindex="0">
+                              Buy it now!
+                        </a>
+                  </div>
+
+                  <!-- <figure class="scope-theory__ydkjs">
+                        <img src="https://github.com/getify/You-Dont-Know-JS/raw/2nd-ed/scope-closures/images/cover.png"
+                             alt="You Don't Know JS Yet: Scope & Closures - 2nd Edition book cover."
+                             width="150">
+                        </img>
+                        <figcaption>
+                              <a class="scope-theory__button"
+                                 href="https://t.co/PbFmTwxQ9e?amp=1"
+                                 target="_blank"
+                                 rel="noreferrer"
+                                 tabindex="0">
+                                    Buy it now!
+                              </a>
+                        </figcaption>
+                  </figure> -->
+            </section>
+      </article>
 
       <div id="snackbar"
            class="snackbar"></div>
