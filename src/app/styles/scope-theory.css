@@ -3,6 +3,7 @@
   width: 100%;
   background-color: var(--light-color);
   padding: var(--padding-md);
+  color: var(--font-color-code-dark);
 }
 
 .scope-theory__title {
@@ -22,6 +23,41 @@
 .scope-theory__theory {
   line-height: var(--line-height-lg);
   padding: var(--padding-xs) 0;
+}
+
+.scope-theory__content {
+  margin-bottom: var(--padding-md);
+}
+
+.scope-theory__sub-content {
+  margin-left: var(--padding-lg);
+}
+
+.scope-theory__code-snippet {
+  display: inline-block;
+  padding: var(--padding-xs) var(--padding-md);
+  margin: var(--padding-md) var(--padding-sm);
+  font-size: 1.4rem;
+  border-left: 3px solid var(--success-color);
+  background-color: #f3f3f3;
+  border-radius: 0px 3px 3px 0px;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2);
+  color: #000000;
+}
+
+.scope-theory__code-comment {
+  color: var(--comment-color);
+  font-size: 1.2rem;
+}
+
+.scope-theory__code-comment--light {
+  color: var(--comment-color--light);
+  font-size: 1.2rem;
+}
+
+.scope-theory__spoiler {
+  margin: var(--padding-sm);
+  cursor: pointer;
 }
 
 .scope-theory__github-link {
@@ -56,7 +92,7 @@
   text-decoration: none;
   margin: var(--padding-sm);
   padding: var(--padding-sm) var(--padding-md);
-  color: var(--font-color);
+  color: var(--font-color--code-dark);
   background-color: var(--accent-color);
   border-radius: 40px;
 }
@@ -64,4 +100,56 @@
 .flexbox {
   display: flex;
   justify-content: center;
+}
+
+.white-bubble {
+  background-color: #f3f3f3;
+}
+
+.red-bubble {
+  background-color: rgb(204, 55, 55);
+  display: block;
+  border-radius: 2px;
+  padding: var(--padding-xs);
+  width: fit-content;
+  color: var(--comment-color--light);
+}
+
+.red-bubble--variable {
+  background-color: rgb(204, 55, 55);
+  border-radius: 2px;
+  width: fit-content;
+  color: var(--comment-color--light);
+}
+
+.blue-bubble {
+  background-color: rgb(51, 109, 185);
+  display: block;
+  border-radius: 2px;
+  padding: var(--padding-xs);
+  width: fit-content;
+  color: var(--comment-color--light);
+}
+
+.blue-bubble--variable {
+  background-color: rgb(51, 109, 185);
+  border-radius: 2px;
+  width: fit-content;
+  color: var(--comment-color--light);
+}
+
+.green-bubble {
+  background-color: rgb(28, 105, 58);
+  display: block;
+  border-radius: 2px;
+  padding: var(--padding-xs);
+  width: fit-content;
+  color: var(--comment-color--light);
+}
+
+.green-bubble--variable {
+  background-color: rgb(28, 105, 58);
+  border-radius: 2px;
+  width: fit-content;
+  color: var(--comment-color--light);
 }

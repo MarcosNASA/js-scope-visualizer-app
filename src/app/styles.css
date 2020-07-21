@@ -14,6 +14,7 @@
 
   --font-color: #f5f5f5;
   --font-color-code-dark: #111111;
+  --font-color-code-dark--lighter: #aaaaaa;
 
   --light-color: #f5f5f5;
 
@@ -22,6 +23,9 @@
 
   --accent-color: #ff5147;
   --accent-color--shade: #b33932;
+
+  --comment-color: #166d53;
+  --comment-color--light: #fafafa;
 
   --success-color: #5cb85c;
   --error-color: #c62828;
@@ -35,12 +39,8 @@
   box-sizing: border-box;
 }
 
-*:focus(:not(a)) {
+*:focus {
   outline: 1px solid var(--main-color);
-}
-
-a:focus {
-  outline: 1px solid var(--light-color);
 }
 
 .app {
@@ -110,6 +110,10 @@ a:focus {
   font-size: 1.4rem;
   transition: 0.3s ease-in-out;
   cursor: pointer;
+}
+
+.nav-bar__link :focus {
+  outline: 1px solid var(--light-color);
 }
 
 .nav-bar__link * {

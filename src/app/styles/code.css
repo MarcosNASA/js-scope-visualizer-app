@@ -30,7 +30,7 @@
   color: rgba(112, 122, 140, 66);
 }
 .cm-s-ayu-mirage .CodeMirror-linenumber {
-  color: rgba(61, 66, 77, 99);
+  color: var(--font-color);
 }
 .cm-s-ayu-mirage .CodeMirror-cursor {
   border-left: 1px solid #ffcc66;
@@ -139,6 +139,7 @@
   justify-content: space-around;
   align-items: flex-start;
   transition: 2s ease-in-out;
+  color: #ffffff;
 }
 
 .show {

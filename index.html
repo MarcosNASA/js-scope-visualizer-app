@@ -106,7 +106,7 @@
                               <a class="nav-bar__link spa-link"
                                  data-target="visualizer"
                                  tabindex="0">
-                                    <svg xmlns="https://www.w3.org/2000/svg"
+                                    <svg xmlns="http://www.w3.org/2000/svg"
                                          class="nav-bar__icon"
                                          height="24"
                                          viewBox="0 0 24 24"
@@ -157,10 +157,59 @@
       <article id="scope-theory"
                class="scope-theory page">
             <header>
-                  <h1 class="scope-theory__title">
+                  <h2 class="scope-theory__title">
                         JS Scope Theory
-                  </h1>
+                  </h2>
             </header>
+            <section class="scope-theory__content">
+                  <header>
+                        <h3 class="scope-theory__sub-title">
+                              What's a block?
+                        </h3>
+                  </header>
+                  <p class="scope-theory__theory">
+                        According to the
+                        <a href="https://www.ecma-international.org/ecma-262/11.0/"
+                           target="_blank"
+                           rel="noreferrer"
+                           tabindex="0">
+                              ECMAScript Language Specification</a>,
+                        a block statement is composed by a pair of brackets and a list of statements.
+                        <br>
+                        If you are familiar with functions or any sort of flow control statement
+                        (for loops, if statements, switch statements...), you are already familiar with blocks.
+                  </p>
+                  <div class="flexbox">
+                        <code class="scope-theory__code-snippet">
+                              function addOdds(...args) {
+                              <span class="scope-theory__code-comment">// 1st block start</span>
+                              <br>
+                              &nbsp;var total = 0;
+                              <br>
+                              &nbsp;for (let number of args) {
+                              <span class="scope-theory__code-comment"> // 2nd block start</span>
+                              <br>
+                              &nbsp;&nbsp;if (number % 2== 0) {
+                              <span class="scope-theory__code-comment"> // 3rd block start</span>
+                              <br>
+                              &nbsp;&nbsp;&nbsp;total += number;
+                              <br>
+                              &nbsp;&nbsp;}
+                              <span class="scope-theory__code-comment"> // 3rd block end</span>
+                              <br>
+                              &nbsp;}
+                              <span class="scope-theory__code-comment"> // 2nd block end</span>
+                              <br>
+                              &nbsp;return total;
+                              <br>
+                              }
+                              <span class="scope-theory__code-comment"> // 1st block end</span>
+                        </code>
+                  </div>
+                  <p class="scope-theory__theory">
+                        Blocks allows us to group a set of statements together.
+                  </p>
+            </section>
             <section class="scope-theory__content">
                   <header>
                         <h3 class="scope-theory__sub-title">
@@ -174,30 +223,233 @@
                   </p>
                   <p class="scope-theory__theory">
                         JS Scope is <i>lexically</i> determined.
+                        <br>
                         This means that the scopes are set before the code execution, during the compilation
                         (<i>lexical</i> comes from the compilation <i>lexing</i> step where the code is split into
                         tokens, the smallest meaningful chunks of information).
-                        The JS engine declares a scope for each block in the code; the variables declared in a
-                        particular scope will only be available inside that scope (including the nested ones).
+                        <br>
+                        Knowing this, we can take advantage of this information in order to predict the scopes
+                        just from looking at our code!
+                  </p>
+            </section>
+            <section class="scope-theory__content">
+                  <header>
+                        <h3 class="scope-theory__sub-title">
+                              How do we do it?
+                        </h3>
+                  </header>
+                  <p class="scope-theory__theory">
+                        The JS engine declares a scope for each block in the code and <i>assigns</i> each variable to
+                        the scope where it was declared.
                   </p>
                   <p class="scope-theory__theory">
-                        To understand JS scoping rules applied to variables availability, we need to differentiate
-                        between function scoped variables and block scoped variables.
+                        In order to predict the scopes, thus, we will have to think like the JS engine does!
+                        <br>
+                        Every time we find a block in our code, we will assign a color to it.
+                        <br>
+                        Every time we find a variable, we will also assign a color to it. But in order to do that,
+                        we need to dive into some concepts!
                   </p>
+                  <section class="scope-theory__sub-content">
+                        <header>
+                              <h4 class="scope-theory__sub-title">
+                                    Variables: target and source references
+                              </h4>
+                        </header>
+                        <p class="scope-theory__theory">
+                              Every variable in our program has one out of two roles: target or source.
+                              <br>
+                              <i>
+                                    In technical documents, target is commonly referred as LHS (left-hand side)
+                                    and source is commonly referred as RHS (right-hand side). This terminology
+                                    was adapted by computer scientists from maths.
+                              </i>
+                              <br>
+                        </p>
+                        <p class="scope-theory__theory">
+                              Whenever we assign something to a variable, we say the variable is in a target reference
+                              position (or LHS): our variable is the target of the assignment operator.
+                              <br>
+                              In other words, a source reference to a variable has a <i>writing</i> role:
+                              we write a value into the variable.
+                        </p>
+                        <p class="scope-theory__theory">
+                              Whenever we pass a variable as an argument in a function call, we say the variable
+                              is in a source reference position (or RHS): our variable is the source of the value for
+                              the function parameter.
+                              <br>
+                              In other words, a target reference to a variable has a <i>reading</i> role:
+                              we read the value that the variable holds.
+                        </p>
+                        <div class="flexbox">
+                              <code class="scope-theory__code-snippet">
+                                    var array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                                    <span class="scope-theory__code-comment">
+                                          // <i>array</i> is a target reference
+                                    </span>
+                                    <br>
+                                    addOdds(...array);
+                                    <span class="scope-theory__code-comment">
+                                          // <i>array</i> is a source reference
+                                    </span>
+                                    <br>
+                              </code>
+                        </div>
+                        <p class="scope-theory__theory">
+                              To state it clearly
+                              <br>
+                              &nbsp;&nbsp;&nbsp;— a target reference is the one where we access a memory address to
+                              write a value in
+                              it and
+                              <br>
+                              &nbsp;&nbsp;&nbsp;— a source reference is the one where we access a memory address to read
+                              a value
+                              from it.
+                        </p>
+                  </section>
+                  <section class="scope-theory__sub-content">
+                        <header>
+                              <h4 class="scope-theory__sub-title">
+                                    Variable declarations
+                              </h4>
+                        </header>
+                        <p class="scope-theory__theory">
+                              A variable declaration is a statement that allocates some space in memory to store a
+                              value.
+                              <br>
+                              Formal variable declarations can be easily spotted: in JS, there are 3 keywords which will
+                              help us to formally declare a variable: <i>var</i>, <i>const</i> and <i>let</i>.
+                              <br>
+                              However, there are other variables in the target roles that might join our variable
+                              declaration group, as in function parameters or loop declarations.
+                        </p>
+                        <div class="flexbox">
+                              <code class="scope-theory__code-snippet">
+                                    function add(a, b) {
+                                    <span class="scope-theory__code-comment">
+                                          // a and b fulfill the target role and are indeed variable declarations
+                                          which will be initialized with the passed arguments at run-time
+                                    </span>
+                                    <br>
+                                    &nbsp;return a + b;
+                                    <br>
+                                    }
+                              </code>
+                        </div>
+                  </section>
+                  <section class="scope-theory__sub-content">
+                        <header>
+                              <h4 class="scope-theory__sub-title">
+                                    Scope & Variables
+                              </h4>
+                        </header>
+                        <p class="scope-theory__theory">
+                              The variables declared in a particular scope will only be available inside that
+                              scope and the
+                              nested ones.
+                        </p>
+                        <p class="scope-theory__theory">
+                              To understand JS scoping rules applied to variables availability, we need to
+                              differentiate
+                              between function scoped variables and block scoped variables.
+                        </p>
+                        <p class="scope-theory__theory">
+                              Before ES2015, the only way to declare a variable in JS was via the <i>var</i>
+                              variable
+                              declaration.
+                              The <i>var</i> variable declaration declares a <i>function scoped variable</i>.
+                              Function scoped variables set the bounds for their availability to the nearest
+                              enclosing
+                              function and, as we discussed previously, the nested blocks.
+                        </p>
+                        <p class="scope-theory__theory">
+                              ES2015 introduced <i>let</i> and <i>const</i> variable declarations.
+                              Both <i>let</i> and <i>const</i> variable declarations declare <i>block scoped
+                                    variables</i>.
+                              Block scoped variables set the bounds for their availability to the nearest
+                              enclosing block
+                              (whether it is a function, a pair of brackets, an if statement, a for statement...),
+                              and, as we
+                              discussed previously, the nested blocks.
+                        </p>
+                  </section>
                   <p class="scope-theory__theory">
-                        Before ES2015, the only way to declare a variable in JS was via the <i>var</i> variable
+                        The information we need to extract from the previous sub-sections and which will give us the
+                        rules to assign a color to our variables can be summarized in two main ideas:
+                        <br>
+                        &nbsp;&nbsp;&nbsp;— Variable declarations will always have the color of the scope where they are
+                        being declared, attending to the differences that using block or function scoped variables might
+                        carry. We will always consider function parameters as declarations inside the function scope.
+                        <br>
+                        &nbsp;&nbsp;&nbsp;— Whenever we find a variable in a source position or a variable in a target
+                        position which is considered a variable declaration, we will perform a lookup for its
+                        declaration, starting in the current scope all the way up to the global one.
+                        We will stop as soon as we find it and will assignt to it the same color it had in its
                         declaration.
-                        The <i>var</i> variable declaration declares a <i>function scoped variable</i>.
-                        Function scoped variables set the bounds for their availability to the nearest enclosing
-                        function and, as we discussed previously, the nested blocks.
                   </p>
                   <p class="scope-theory__theory">
-                        ES2015 introduced <i>let</i> and <i>const</i> variable declarations.
-                        Both <i>let</i> and <i>const</i> variable declarations declare <i>block scoped variables</i>.
-                        Block scoped variables set the bounds for their availability to the nearest enclosing block
-                        (whether it is a function, a pair of brackets, an if statement, a for statement...), and, as we
-                        discussed previously, the nested blocks.
+                        With our current knowledge, we should be ready to test our new gained scope analysis skills!
+                        <br>
+                        Try revisiting our <code>addOdds</code> function
+                        and assign a colored bubble to each scope and variable we can find!
                   </p>
+                  <details class="scope-theory__spoiler">
+                        <summary>Solution</summary>
+                        <div class="flexbox">
+                              <code class="scope-theory__code-snippet white-bubble">
+                                    <span class="scope-theory__code-comment">// global/outer scope start:
+                                          WHITE</span>
+                                    <br>
+                                    function addOdds(...<span class="red-bubble--variable">args</span>) {
+                                    <span class="scope-theory__code-comment">// 1st block start</span>
+                                    <br>
+                                    <span class="red-bubble">
+                                          <span class="scope-theory__code-comment--light">
+                                                // function scope: RED
+                                          </span>
+                                          <br>
+                                          &nbsp;var total = 0;
+                                          <br>
+                                          &nbsp;for (let <span class="blue-bubble--variable">number</span> of
+                                          args) {
+                                          <span class="scope-theory__code-comment--light"> // 2nd block
+                                                start</span>
+                                          <br>
+                                          <span class="blue-bubble">
+                                                &nbsp;&nbsp;<span class="scope-theory__code-comment--light">
+                                                      // loop scope: BLUE
+                                                </span>
+                                                <br>
+                                                &nbsp;&nbsp;if (<span class="blue-bubble--variable">number</span>
+                                                % 2 ==
+                                                0) {
+                                                <span class="scope-theory__code-comment--light"> // 3rd block
+                                                      start</span>
+                                                <br>
+                                                <span class="green-bubble">
+                                                      &nbsp;&nbsp;&nbsp;<span class="scope-theory__code-comment--light">
+                                                            // if scope: GREEN
+                                                      </span>
+                                                      <br>
+                                                      &nbsp;&nbsp;&nbsp;<span class="red-bubble--variable">total</span>
+                                                      +=
+                                                      <span class="blue-bubble--variable">number</span>;
+                                                </span>
+                                                &nbsp;&nbsp;}
+                                                <span class="scope-theory__code-comment--light"> // 3rd block
+                                                      end</span>
+                                          </span>
+                                          &nbsp;}
+                                          <span class="scope-theory__code-comment--light"> // 2nd block end</span>
+                                          <br>
+                                          &nbsp;return total;
+                                    </span>
+                                    }
+                                    <span class="scope-theory__code-comment"> // 1st block end</span>
+                                    <br>
+                              </code>
+                        </div>
+                  </details>
             </section>
             <section class="scope-theory__content">
                   <header>
@@ -220,26 +472,25 @@
                            rel="noreferrer"
                            tabindex="0">@MarcosNASAG</a>)
                         - 2020.
-                        </br>
-                        <div class="flexbox">
-                              <a class="scope-theory__github-link"
-                                 href="https://github.com/MarcosNASA"
-                                 target="_blank"
-                                 rel="noreferrer"
-                                 tabindex="0">
-                                    <svg class="scope-theory__icon"
-                                         viewBox="0 0 24 24"
-                                         xmlns="https://www.w3.org/2000/svg"
-                                         role="img"
-                                         fill="#2a313b">
-                                          <title>GitHub icon</title>
-                                          <path
-                                                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                                    </svg>
-                                    Check it in GitHub
-                              </a>
-                        </div>
                   </p>
+                  <div class="flexbox">
+                        <a class="scope-theory__github-link"
+                           href="https://github.com/MarcosNASA"
+                           target="_blank"
+                           rel="noreferrer"
+                           tabindex="0">
+                              <svg class="scope-theory__icon"
+                                   viewBox="0 0 24 24"
+                                   xmlns="http://www.w3.org/2000/svg"
+                                   role="img"
+                                   fill="#2a313b">
+                                    <title>GitHub icon</title>
+                                    <path
+                                          d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                              </svg>
+                              Check it in GitHub
+                        </a>
+                  </div>
             </section>
             <section class="scope-theory__content">
                   <header>
@@ -276,22 +527,6 @@
                               Buy it now!
                         </a>
                   </div>
-
-                  <!-- <figure class="scope-theory__ydkjs">
-                        <img src="https://github.com/getify/You-Dont-Know-JS/raw/2nd-ed/scope-closures/images/cover.png"
-                             alt="You Don't Know JS Yet: Scope & Closures - 2nd Edition book cover."
-                             width="150">
-                        </img>
-                        <figcaption>
-                              <a class="scope-theory__button"
-                                 href="https://t.co/PbFmTwxQ9e?amp=1"
-                                 target="_blank"
-                                 rel="noreferrer"
-                                 tabindex="0">
-                                    Buy it now!
-                              </a>
-                        </figcaption>
-                  </figure> -->
             </section>
       </article>
 
