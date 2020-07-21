@@ -377,15 +377,14 @@
                         The information we need to extract from the previous sub-sections and which will give us the
                         rules to assign a color to our variables can be summarized in two main ideas:
                         <br>
-                        &nbsp;&nbsp;&nbsp;— Variable declarations will always have the color of the scope where they are
+                        &nbsp;&nbsp;&nbsp;— Variable declarations will always have the color of the block where they are
                         being declared, attending to the differences that using block or function scoped variables might
                         carry. We will always consider function parameters as declarations inside the function scope.
                         <br>
                         &nbsp;&nbsp;&nbsp;— Whenever we find a variable in a source position or a variable in a target
-                        position which is considered a variable declaration, we will perform a lookup for its
-                        declaration, starting in the current scope all the way up to the global one.
-                        We will stop as soon as we find it and will assignt to it the same color it had in its
-                        declaration.
+                        position which is not a variable declaration, we will perform a lookup for its
+                        declaration, starting in the current block all the way up to the global one.
+                        We will stop as soon as we find it and will assign to it the color of the block where it was declared.                      declaration.
                   </p>
                   <p class="scope-theory__theory">
                         With our current knowledge, we should be ready to test our new gained scope analysis skills!
