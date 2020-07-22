@@ -61,7 +61,7 @@
   height: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 30px 70px;
   gap: 4px;
   grid-template-areas:
     'title'
