@@ -30,6 +30,7 @@
 }
 
 .scope-theory__sub-content {
+  margin-top: var(--padding-xs);
   margin-left: var(--padding-lg);
 }
 
