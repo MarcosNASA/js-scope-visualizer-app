@@ -28,6 +28,12 @@
       "sizes": "192x192"
     },
     {
+      "src": "./assets/icons/icon-maskable.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
       "src": "./assets/icons/icon-128.png",
       "type": "image/png",
       "sizes": "128x128"

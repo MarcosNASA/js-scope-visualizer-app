@@ -383,8 +383,9 @@
                         <br>
                         &nbsp;&nbsp;&nbsp;— Whenever we find a variable in a source position or a variable in a target
                         position which is not a variable declaration, we will perform a lookup for its
-                        declaration, starting in the current block all the way up to the global one.
-                        We will stop as soon as we find it and will assign to it the color of the block where it was declared.                      declaration.
+                        declaration, starting in the current block all the way up to the outermost.
+                        We will stop as soon as we find it and will assign to it the color of the block where it was
+                        declared. declaration.
                   </p>
                   <p class="scope-theory__theory">
                         With our current knowledge, we should be ready to test our new gained scope analysis skills!
