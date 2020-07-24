@@ -29,7 +29,7 @@
     initializeSPA();
 
     /**
-     *
+     * Takes care of initializing the Scope Visualizer main behavior.
      */
     function initializeScopeVisualizer() {
       code = { ...defaultCode };
@@ -110,6 +110,9 @@
       }
     }
 
+    /**
+     * Takes care of handling the SPA behavior.
+     */
     function initializeSPA() {
       document
         .querySelectorAll('.spa-link')

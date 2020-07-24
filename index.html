@@ -34,17 +34,38 @@
       <link rel="apple-touch-icon"
             href="./assets/icons/favicon.ico">
       <link href="lib/codemirror.css"
+            rel="preload"
+            as="style">
+      <link href="lib/codemirror.css"
             rel="stylesheet">
+      <link href="./src/app/styles.css"
+            rel="preload"
+            as="style">
       <link href="./src/app/styles.css"
             rel="stylesheet">
       <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
+            rel="preload"
+            as="style">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
             rel="stylesheet">
+      <link href="./src/app/styles/code.css"
+            rel="preload"
+            as="style">
       <link href="./src/app/styles/code.css"
             rel="stylesheet">
       <link href="./src/app/styles/visualizer.css"
+            rel="preload"
+            as="style">
+      <link href="./src/app/styles/visualizer.css"
             rel="stylesheet">
       <link href="./src/app/styles/scope-theory.css"
+            rel="preload"
+            as="style">
+      <link href="./src/app/styles/scope-theory.css"
             rel="stylesheet">
+      <link href="./src/app/styles/mediaqueries.css"
+            rel="preload"
+            as="style">
       <link href="./src/app/styles/mediaqueries.css"
             rel="stylesheet">
       <script src="lib/keywords.js"
@@ -72,6 +93,19 @@
       </script>
       <link rel="manifest"
             href="./manifest.json">
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async
+              src="https://www.googletagmanager.com/gtag/js?id=G-K4Z3XKWFR2"></script>
+      <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                  dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+
+            gtag('config', 'G-K4Z3XKWFR2');
+      </script>
 </head>
 
 <body class="app">
@@ -277,12 +311,10 @@
                               To state it clearly
                               <br>
                               &nbsp;&nbsp;&nbsp;— a target reference is the one where we access a memory address to
-                              write a value in
-                              it and
+                              write a value in it and
                               <br>
                               &nbsp;&nbsp;&nbsp;— a source reference is the one where we access a memory address to read
-                              a value
-                              from it.
+                              a value from it.
                         </p>
                   </section>
                   <section class="scope-theory__sub-content">
