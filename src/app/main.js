@@ -78,13 +78,6 @@
 
         /**
          *
-         */
-        function reDraw() {
-          updateCodeDisplayer(code);
-        }
-
-        /**
-         *
          * @param {*} func
          * @param {*} wait
          * @param {*} immediate
@@ -136,6 +129,10 @@
         var newPage = document.getElementById(newPageId);
         newPage.classList.add('active');
         history.pushState({}, newPageId, `#${newPageId}`);
+
+        if (newPageId == 'visualizer') {
+          reDraw();
+        }
       }
 
       /**
@@ -149,6 +146,13 @@
         var newPage = document.getElementById(newPageId);
         newPage.classList.add('active');
       }
+    }
+
+    /**
+     *
+     */
+    function reDraw() {
+      updateCodeDisplayer(code);
     }
   }
 
@@ -396,7 +400,7 @@
         },
         through: outerScopeVariables,
         variables: potentialParameters,
-        references: otherVariables
+        references: otherVariables,
       } = scope;
 
       let scopeColor = scopes.scopesColors[index];
