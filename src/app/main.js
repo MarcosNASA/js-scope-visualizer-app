@@ -110,19 +110,19 @@
       document
         .querySelectorAll('.spa-link')
         .forEach(function setLinkEventListener(link) {
-          link.addEventListener('click', navigate);
+          link.addEventListener('click', handleAppNavigation);
         });
 
       history.replaceState({}, 'Visualizer', '#visualizer');
 
-      window.addEventListener('popstate', navigateBack);
+      window.addEventListener('popstate', handleBrowserNavigation);
 
       /**
        * Navigates to a new page.
        * @param {object} event Event details for the event triggered
        * by clicking a navigation link.
        */
-      function navigate(event) {
+      function handleAppNavigation(event) {
         event.preventDefault();
         var newPageId = event.target.dataset.target;
         document.querySelector('.active').classList.remove('active');
@@ -136,11 +136,11 @@
       }
 
       /**
-       * Navigates the history, allowing the user to navigate back.
+       * Navigates the history via the browser arrows.
        * @param {object} event Event details for the event triggered
        * when the active history entry changes.
        */
-      function navigateBack(event) {
+      function handleBrowserNavigation(event) {
         var newPageId = location.hash.replace('#', '');
         document.querySelector('.active').classList.remove('active');
         var newPage = document.getElementById(newPageId);
