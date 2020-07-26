@@ -396,12 +396,13 @@
         },
         through: outerScopeVariables,
         variables: potentialParameters,
+        references: otherVariables
       } = scope;
 
       let scopeColor = scopes.scopesColors[index];
 
       // Identify outer scope variables.
-      for (let reference of outerScopeVariables) {
+      for (let reference of [...outerScopeVariables, ...otherVariables]) {
         let { identifier } = reference;
         let {
           identifier: { name, range: [startChar, endChar] = [0, 0] },
@@ -423,7 +424,10 @@
             return false;
           }
 
-          return parameter.defs[0].type == 'Parameter';
+          return (
+            parameter.defs[0].type == 'Parameter' ||
+            parameter.defs[0].type == 'Variable'
+          );
         },
       );
 
