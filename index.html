@@ -244,7 +244,7 @@
                         (<i>lexical</i> comes from the compilation <i>lexing</i> step where the code is split into
                         tokens, the smallest meaningful chunks of information).
                         <br>
-                        Knowing this, we can take advantage of this information in order to predict the scopes
+                        We can take advantage of this information in order to predict the scopes
                         just from looking at our code!
                   </p>
             </section>
@@ -259,7 +259,7 @@
                         the scope where it was declared.
                   </p>
                   <p class="scope-theory__theory">
-                        In order to predict the scopes, thus, we will have to think like the JS engine does!
+                        In order to predict scopes, thus, we will have to think like the JS engine does!
                         <br>
                         Every time we find a block in our code, we will assign a color to it.
                         <br>
@@ -284,7 +284,7 @@
                         </p>
                         <p class="scope-theory__theory">
                               Whenever we assign something to a variable, we say the variable is in a target reference
-                              position (or LHS): our variable is the target of the assignment operator.
+                              position (or LHS): the variable is the target of the assignment operator.
                               <br>
                               In other words, a source reference to a variable has a <i>writing</i> role:
                               we write a value into the variable.
@@ -399,7 +399,7 @@
                         position which is not a variable declaration, we will perform a lookup for its
                         declaration, starting in the current block all the way up to the outermost.
                         We will stop as soon as we find it and will assign to it the color of the block where it was
-                        declared. declaration.
+                        declared.
                   </p>
                   <p class="scope-theory__theory">
                         With our current knowledge, we should be ready to test our new gained scope analysis skills!
