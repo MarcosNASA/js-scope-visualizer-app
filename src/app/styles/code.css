@@ -156,6 +156,32 @@
   align-items: flex-start;
 }
 
+.checkout-bubbles {
+  background-color: var(--success-color);
+  min-height: 61px;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: calc(100% - 40px);
+  margin: 20px auto;
+  padding: 20px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  border-radius: 2px;
+  display: flex;
+  opacity: 1;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
+  color: #ffffff;
+}
+
+.checkout-bubbles-message {
+  font-size: 30px;
+  line-height: 1.5;
+}
+
 .unexpected-message {
   font-family: monospace;
   font-size: 14px;
