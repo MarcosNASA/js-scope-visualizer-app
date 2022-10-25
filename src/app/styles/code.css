@@ -171,15 +171,25 @@
   border-radius: 2px;
   display: flex;
   opacity: 1;
-  flex-direction: column;
-  justify-content: space-around;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: flex-start;
   color: #ffffff;
 }
 
-.checkout-bubbles-message {
+.checkout-bubbles__message {
   font-size: 30px;
   line-height: 1.5;
+}
+
+.checkout-bubbles__dismiss {
+  font-size: 60px;
+  height: 32px;
+  width: 32px;
+  all: unset;
+  cursor: pointer;
+  background: transparent;
+  border: none;
 }
 
 .unexpected-message {

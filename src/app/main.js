@@ -18,6 +18,7 @@
   var codeDisplayer;
   var scopeBubbles;
   var snackBar;
+  var checkoutBubblesDismissButton;
 
   bootstrap();
 
@@ -37,6 +38,9 @@
       codeDisplayer = document.getElementById('code-displayer');
       scopeBubbles = document.getElementById('scopes');
       snackBar = document.getElementById('snackbar');
+      checkoutBubblesDismissButton = document.getElementById(
+        'checkout-bubbles-dismiss',
+      );
 
       setEventListeners();
 
@@ -48,6 +52,10 @@
         codeEditor.on('change', handleInputDebounced);
         codeDisplayer.addEventListener('scroll', reDraw, { passive: true });
         window.addEventListener('resize', reDraw, { passive: true });
+        checkoutBubblesDismissButton.addEventListener(
+          'click',
+          handleCheckoutBubblesDismissButtonClick,
+        );
 
         /**
          *
@@ -153,6 +161,13 @@
      */
     function reDraw() {
       updateCodeDisplayer(code);
+    }
+
+    /**
+     *
+     */
+    function handleCheckoutBubblesDismissButtonClick() {
+      closeCheckoutBubbles();
     }
   }
 
@@ -631,10 +646,8 @@
         continue;
       }
 
-      let {
-        y: lineY,
-        height: lineHeight,
-      } = bubbleLines[0].getBoundingClientRect();
+      let { y: lineY, height: lineHeight } =
+        bubbleLines[0].getBoundingClientRect();
 
       let lastTokens = [];
       for (let bubbleLine of bubbleLines) {
@@ -886,6 +899,27 @@
     async function removeShowClass() {
       snackBar.classList.remove('show');
       await clearErrorElements();
+    }
+  }
+
+  function closeCheckoutBubbles() {
+    var checkoutBubbles = document.querySelector('#checkout-bubbles');
+    var fadeOut = checkoutBubbles.animate(
+      [
+        {
+          opacity: '1',
+        },
+        {
+          opacity: '0',
+        },
+      ],
+      { duration: 400 },
+    );
+
+    fadeOut.onfinish = removeCheckoutBubbles;
+
+    function removeCheckoutBubbles() {
+      checkoutBubbles.remove();
     }
   }
 })();

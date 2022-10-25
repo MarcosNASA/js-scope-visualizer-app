@@ -554,14 +554,21 @@
       </section>
     </article>
 
-    <div id="snackbar" class="snackbar"></div>
-
-    <div class="checkout-bubbles">
-      <p role="alert" class="checkout-bubbles-message">
+    <div id="checkout-bubbles" class="checkout-bubbles">
+      <p role="alert" class="checkout-bubbles__message">
         Checkout
         <a class="link" href="https://jsbubbl.es/">Bubbl.es</a> instead! It's
         the better version of this tool :)
       </p>
+      <button
+        id="checkout-bubbles-dismiss"
+        class="checkout-bubbles__dismiss"
+        aria-label="Dismiss"
+      >
+        &times;
+      </button>
     </div>
+
+    <div id="snackbar" class="snackbar"></div>
   </body>
 </html>
